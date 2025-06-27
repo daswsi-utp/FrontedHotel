@@ -1,45 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-
-interface Promotion {
-  id: number;
-  title: string;
-  description: string;
-  discountText: string;
-  period: string;
-  minStay: string;
-  applicableRooms: string;
-  status: 'Active' | 'Inactive';
-}
+import * as service from '../promotions/service/promotionService.ts'
 
 export default function PromotionsPage() {
   // 👇 Datos de ejemplo; luego reemplaza con tu llamada a la API
-  const [promotions, setPromotions] = useState<Promotion[]>([
-    {
-      id: 1,
-      title: 'Early Summer Special',
-      description: 'Book your summer getaway early and save 20% on all room types.',
-      discountText: '20% off',
-      period: 'Feb 28, 2025 - May 14, 2025',
-      minStay: '3 nights',
-      applicableRooms: 'All rooms',
-      status: 'Active',
-    },
-    {
-      id: 2,
-      title: 'Weekend Escape',
-      description: 'Enjoy a special rate on our Deluxe and Suite rooms for weekends.',
-      discountText: '15% off',
-      period: 'Jan 31, 2025 - Apr 29, 2025',
-      minStay: '2 nights',
-      applicableRooms: '4 rooms',
-      status: 'Active',
-    },
-    // … más promos
-  ]);
-
+  const [promotions, setPromotions] = useState<service.Promotion[]>([]);
+  const [roomType, setRoomTypes] = usestate<service.RoomType[]>([]);
+  const [promotionRequest, setPromotionRequest] = useState<service.PromotionRequest>();
   const [filter, setFilter] = useState<'All' | 'Active' | 'Inactive'>('All');
   const [search, setSearch] = useState('');
 
