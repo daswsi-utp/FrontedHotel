@@ -18,7 +18,7 @@ export interface Promotion{
   isActive: boolean;
   minStay: number;
   roomApplicability: RoomApplicability;
-  rooms: RoomType[];
+  roomsTypes: RoomType[];
 }
 
 //Promotion to be registered or updated
@@ -36,34 +36,34 @@ export interface PromotionRequest{
 }
 
 export interface RoomType{
-  roomTypId: number;
+  roomTypeId: number;
   name: string;
 }
 
-export const getAllPromotions = async(): Promise<Promotion[]> =>{
+export const getAllPromotions = async (): Promise<Promotion[]> =>{
   const res  = await axios.get<Promotion[]>(`${GATEWAY_URL}/api/promotions/all`);
   return res.data;
 }
-export const searchPromotionsByName = async(name: string): Promise<Promotion[]> =>{
+export const searchPromotionsByName = async (name: string): Promise<Promotion[]> =>{
   const res  = await axios.get<Promotion[]>(`${GATEWAY_URL}/api/promotions/name/${name}`);
   return res.data;
 }
-export const searchPromotionByNameAndOrStatus = async(name?: string, isActive?: boolean): Promise<Promotion[]> =>{
-  const params: any = {};
+export const searchPromotionByNameAndOrStatus = async (name?: string, isActive?: boolean): Promise<Promotion[]> =>{
+  const params: Partial<{name: string; isActive: boolean}> = {};
   if(name) params.name = name;
   if(isActive !== undefined) params.isActive = isActive;
   const res = await axios.get<Promotion[]>(`${GATEWAY_URL}/api/promotions/find`, {params});
   return res.data;
 }
-export const savePromotionRequest = async(promotion: PromotionRequest): =>{
-  cons res = await axios.post(`${GATEWAY_URL}/api/promotion/save`, promotion);
+export const savePromotionRequest = async (promotion: PromotionRequest) =>{
+  const res = await axios.post(`${GATEWAY_URL}/api/promotion/save`, promotion);
   return res.data;
 }
-export const updatePromotion = async(id: number, promotion: PromotionRequest): => {
-  cons res = await axios.put(`${GATEWAY_URL}/api/promotion/update/${id}`, promotion);
+export const updatePromotion = async (id: number, promotion: PromotionRequest) => {
+  const res = await axios.put(`${GATEWAY_URL}/api/promotion/update/${id}`, promotion);
   return res.data;
 }
-export const getAllRoomTypes = async(): Promise<RoomType[]> =>{
+export const getAllRoomTypes = async (): Promise<RoomType[]> =>{
   const res = await axios.get<RoomType[]>(`${GATEWAY_URL}/api/promotions/type/all`);
   return res.data;
 }
