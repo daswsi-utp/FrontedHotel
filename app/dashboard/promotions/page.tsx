@@ -206,99 +206,6 @@ export default function PromotionsPage() {
             ))}
           </div>
         </div>
-
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow rounded">
-            <thead>
-              <tr className="bg-gray-100 text-left">
-                {[
-                  'Title',
-                  'Discount type',
-                  'Discount',
-                  'Start date',
-                  'End date',
-                  'Minimum Stay',
-                  'Applicable Rooms',
-                  'Status',
-                  'Actions',
-                ].map(col => (
-                  <th key={col} className="px-4 py-2 text-sm font-medium text-gray-600">
-                    {col}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {promotions.map(promo => (
-                <tr key={promo.promotionId} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm">
-                    <div className="font-medium">{promo.name}</div>
-                    <div className="text-gray-500 text-xs">{promo.description.substring(0,60)}...</div>
-                  </td>
-                  <td className="px-4 py-3 text-sm">{promo.type}</td>
-                  <td className="px-4 py-3 text-sm">{
-                    promo.type === 'percentage' ? `${promo.discountValue}% off` : 
-                      promo.type === 'fixed' ? `${promo.discountValue} off` : 'Added value'
-                  }</td>
-                  <td className="px-4 py-3 text-sm">{promo.startDate}</td>
-                  <td className="px-4 py-3 text-sm">{promo.endDate}</td>
-                  <td className="px-4 py-3 text-sm">{promo.minStay}</td>
-                  <td className="px-4 py-3 text-sm">{promo.roomApplicability}</td>
-                  <td className="px-4 py-3 text-sm">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        promo.isActive === true
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {promo.isActive === true ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-sm space-x-2">
-                    <button className="text-blue-600 underline text-xs" onClick={() => openEditModal(promo)}>Edit</button>
-                    <button className="text-blue-600 underline text-xs" onClick={() => setSelectedProm(promo)}>Details</button>
-                    <button className="text-red-600 underline text-xs">
-                      {promo.isActive === true ? 'Deactivate' : 'Activate'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {selectedProm && (
-          <div id="details-modal" tabIndex={-1} aria-hidden="true" className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            <div className="relative p-4 w-full max-w-2xl max-h-full">
-              <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-                <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    {selectedProm.name}
-                  </h3>
-                </div>
-                <div className="p-4 md:p-5 space-y-4">
-                  <h4 className="mb-2 text-lg font-semibold text-gray-900">Description</h4>
-                  <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                    {selectedProm.description}
-                  </p>
-                  <h4 className="mb-2 text-lg font-semibold text-gray-900">Applied room types</h4>
-                  <ul className="max-w-md space-y-1 text-gray-500 list-disc list-inside">
-                    {selectedProm.roomsTypes?.map((roomType) =>(
-                      <li key={roomType.roomTypeId}>{roomType.name}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                  <button onClick={() => setSelectedProm(null)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Panel to create a new promotion */}
         {showAddPromotion && (
           <motion.div
@@ -475,8 +382,119 @@ export default function PromotionsPage() {
           </motion.div>
 
         )}
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white shadow rounded">
+            <thead>
+              <tr className="bg-gray-100 text-left">
+                {[
+                  'Title',
+                  'Discount type',
+                  'Discount',
+                  'Start date',
+                  'End date',
+                  'Minimum Stay',
+                  'Applicable Rooms',
+                  'Status',
+                  'Actions',
+                ].map(col => (
+                  <th key={col} className="px-4 py-2 text-sm font-medium text-gray-600">
+                    {col}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {promotions.map(promo => (
+                <tr key={promo.promotionId} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm">
+                    <div className="font-medium">{promo.name}</div>
+                    <div className="text-gray-500 text-xs">{promo.description.substring(0,60)}...</div>
+                  </td>
+                  <td className="px-4 py-3 text-sm">{promo.type}</td>
+                  <td className="px-4 py-3 text-sm">{
+                    promo.type === 'percentage' ? `${promo.discountValue}% off` : 
+                      promo.type === 'fixed' ? `${promo.discountValue} off` : 'Added value'
+                  }</td>
+                  <td className="px-4 py-3 text-sm">{promo.startDate}</td>
+                  <td className="px-4 py-3 text-sm">{promo.endDate}</td>
+                  <td className="px-4 py-3 text-sm">{promo.minStay}</td>
+                  <td className="px-4 py-3 text-sm">{promo.roomApplicability}</td>
+                  <td className="px-4 py-3 text-sm">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        promo.isActive === true
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                    >
+                      {promo.isActive === true ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm space-x-2">
+                    <button className="text-blue-600 underline text-xs" onClick={() => openEditModal(promo)}>Edit</button>
+                    <button className="text-blue-600 underline text-xs" onClick={() => setSelectedProm(promo)}>Details</button>
+                    <button className="text-red-600 underline text-xs">
+                      {promo.isActive === true ? 'Deactivate' : 'Activate'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {selectedProm && (
+          <motion.div
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            exit={{opacity: 0}}
+            transition={{duration:0.3}}
+            className="fixed inset-0 z-[999] grid h-screen w-screen place-items-center bg-gray-300 bg-opacity-60 backdrop-blur-sm"
+          >
+            <div
+              data-dialog="animated-modal"
+              data-dialog-mount="opacity-100 translate-y-0 scale-100"
+              data-dialog-unmount="opacity-0 -translate-y-28 scale-90 pointer-events-none"
+              data-dialog-transition="transition-all duration-300"
+              className="relative m-4 p-4 w-2/5 min-w-[40%] max-w-[40%] rounded-lg bg-white shadow-sm"
+            >
+              <div className="text-center pb-4 text-xl font-medium text-slate-800">
+                {selectedProm.name}
+              </div>
+              <div className="relative border-t border-slate-200 py-4 leading-normal text-slate-600 font-light space-y-4">
+                <div>
+                  <h4 className="text-lg font-semibold text-slate-800">Description</h4>
+                  <p>{selectedProm.description}</p>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-slate-800">Applied Room Types</h4>
+                  <ul className="list-disc list-inside">
+                    {selectedProm.roomsTypes?.map((roomType) => (
+                      <li key={roomType.roomTypeId}>{roomType.name}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="flex shrink-0 flex-wrap items-center pt-4 justify-end">
+                <button
+                  onClick={() => setSelectedProm(null)}
+                  className="rounded-md bg-blue-600 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-blue-700 focus:shadow-none active:bg-blue-700 hover:bg-blue-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                  type="button"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )} 
+        
         {showEditPromotion && editPromotion && (
-          <div className="fixed inset-0 bg-black backdrop-blur-sm bg-opacity-30 flex justify-center items-center z-50">
+          <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-[999] bg-gray-300 backdrop-blur-sm bg-opacity-30 flex justify-center items-center">
             <div className="bg-white p-8 rounded shadow max-w-3xl w-full">
               <h2 className="text-xl font-semibold mb-6">Edit Promotion</h2>
 
@@ -643,7 +661,7 @@ export default function PromotionsPage() {
                 </div>
               </form>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </>
