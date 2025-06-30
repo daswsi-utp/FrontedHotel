@@ -1,5 +1,5 @@
 import axios from 'axios';
-const GATEWAY_URL = process.env.NEXT_PUBLIC_HOTEL_URL || "http://localhost:8080";
+const GATEWAY_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export type PromotionType = 'percentage' | 'fixed' | 'added_value';
 export type RoomApplicability = 'all' | 'selected';
@@ -48,7 +48,7 @@ export const searchPromotionsByName = async (name: string): Promise<Promotion[]>
   const res  = await axios.get<Promotion[]>(`${GATEWAY_URL}/api/promotions/name/${name}`);
   return res.data;
 }
-export const searchPromotionByNameAndOrStatus = async (name?: string, isActive?: boolean): Promise<Promotion[]> =>{
+export const searchPromotionsByNameAndOrStatus = async (name?: string, isActive?: boolean): Promise<Promotion[]> =>{
   const params: Partial<{name: string; isActive: boolean}> = {};
   if(name) params.name = name;
   if(isActive !== undefined) params.isActive = isActive;
@@ -64,6 +64,6 @@ export const updatePromotion = async (id: number, promotion: PromotionRequest) =
   return res.data;
 }
 export const getAllRoomTypes = async (): Promise<RoomType[]> =>{
-  const res = await axios.get<RoomType[]>(`${GATEWAY_URL}/api/promotions/type/all`);
+  const res = await axios.get<RoomType[]>(`${GATEWAY_URL}/api/rooms/type/all`);
   return res.data;
 }
