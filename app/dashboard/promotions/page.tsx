@@ -449,7 +449,7 @@ export default function PromotionsPage() {
             animate={{opacity: 1}}
             exit={{opacity: 0}}
             transition={{duration:0.3}}
-            className="fixed inset-0 z-[999] grid h-screen w-screen place-items-center bg-gray-300 bg-opacity-60 backdrop-blur-sm"
+            className="fixed inset-0 z-[999] grid h-screen w-screen place-items-center bg-gray-900/50 backdrop-blur-sm"
           >
             <div
               data-dialog="animated-modal"
@@ -494,7 +494,7 @@ export default function PromotionsPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-[999] bg-gray-300 backdrop-blur-sm bg-opacity-30 flex justify-center items-center">
+              className="fixed inset-0 z-[999] bg-gray-900/50 backdrop-blur-sm -opacity-30 flex justify-center items-center">
             <div className="bg-white p-8 rounded shadow max-w-3xl w-full">
               <h2 className="text-xl font-semibold mb-6">Edit Promotion</h2>
 

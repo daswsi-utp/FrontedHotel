@@ -1,5 +1,4 @@
-import axios from 'axios';
-const GATEWAY_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+import api from "../../../gateway-services/ConnectionService";
 
 export type PromotionType = 'percentage' | 'fixed' | 'added_value';
 export type RoomApplicability = 'all' | 'selected';
@@ -41,29 +40,29 @@ export interface RoomType{
 }
 
 export const getAllPromotions = async (): Promise<Promotion[]> =>{
-  const res  = await axios.get<Promotion[]>(`${GATEWAY_URL}/api/promotions/all`);
+  const res  = await api.get<Promotion[]>(`/api/promotions/all`);
   return res.data;
 }
 export const searchPromotionsByName = async (name: string): Promise<Promotion[]> =>{
-  const res  = await axios.get<Promotion[]>(`${GATEWAY_URL}/api/promotions/name/${name}`);
+  const res  = await api.get<Promotion[]>(`/api/promotions/name/${name}`);
   return res.data;
 }
 export const searchPromotionsByNameAndOrStatus = async (name?: string, isActive?: boolean): Promise<Promotion[]> =>{
   const params: Partial<{name: string; isActive: boolean}> = {};
   if(name) params.name = name;
   if(isActive !== undefined) params.isActive = isActive;
-  const res = await axios.get<Promotion[]>(`${GATEWAY_URL}/api/promotions/find`, {params});
+  const res = await api.get<Promotion[]>(`/api/promotions/find`, {params});
   return res.data;
 }
 export const savePromotionRequest = async (promotion: PromotionRequest) =>{
-  const res = await axios.post(`${GATEWAY_URL}/api/promotion/save`, promotion);
+  const res = await api.post(`/api/promotions/save`, promotion);
   return res.data;
 }
 export const updatePromotion = async (id: number, promotion: PromotionRequest) => {
-  const res = await axios.put(`${GATEWAY_URL}/api/promotion/update/${id}`, promotion);
+  const res = await api.put(`/api/promotions/update/${id}`, promotion);
   return res.data;
 }
 export const getAllRoomTypes = async (): Promise<RoomType[]> =>{
-  const res = await axios.get<RoomType[]>(`${GATEWAY_URL}/api/rooms/type/all`);
+  const res = await api.get<RoomType[]>(`/api/rooms/type/all`);
   return res.data;
 }
