@@ -5,6 +5,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock } from "lucide-react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -28,15 +29,15 @@ export default function LoginPage() {
           {/* Correo */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Correo electrónico
+              Username
             </label>
             <div className="mt-1 flex items-center border border-gray-300 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-400">
               <Mail className="w-5 h-5 text-gray-400 mr-2" />
               <input
-                id="email"
-                type="email"
+                id="username"
+                type="username"
                 className="flex-1 outline-none"
-                placeholder="tucorreo@ejemplo.com"
+                placeholder="JhonDoe1"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -47,7 +48,7 @@ export default function LoginPage() {
           {/* Contraseña */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Contraseña
+              Password
             </label>
             <div className="mt-1 flex items-center border border-gray-300 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-400">
               <Lock className="w-5 h-5 text-gray-400 mr-2" />
@@ -67,11 +68,11 @@ export default function LoginPage() {
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 px-4 rounded-xl hover:bg-indigo-700 transition"
           >
-            Iniciar Sesión
+            Sign In
           </button>
         </form>
         <p className="text-center text-sm text-gray-500 mt-4">
-          ¿No tienes cuenta? <span className="underline cursor-pointer">Regístrate</span>
+          Don't you have an account? <Link href="/auth/register" className="underline cursor-pointer">Register</Link>
         </p>
       </div>
     </main>
