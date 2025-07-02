@@ -1,7 +1,7 @@
 "use client";
 
+import api from "../../../gateway-services/ConnectionService";
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 interface Message {
   id: number;
@@ -19,7 +19,7 @@ export default function GuestMessagesPage() {
   const [filter, setFilter] = useState<"all" | "read" | "unread">("all");
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/messages")
+    api.get("/api/messages")
       .then((res) => setMessages(res.data))
       .catch((err) => console.error("Error loading messages", err));
   }, []);
@@ -34,7 +34,7 @@ export default function GuestMessagesPage() {
     setSelectedMessage(msg);
 
     if (!msg.read) {
-      axios.put(`http://localhost:8080/api/messages/${msg.id}/read`)
+      api.put(`/api/messages/${msg.id}/read`)
         .then(() => {
           setMessages((prev) =>
             prev.map((m) =>

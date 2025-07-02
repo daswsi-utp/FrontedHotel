@@ -1,5 +1,6 @@
 'use client';
 
+import api from "../../../gateway-services/ConnectionService";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
@@ -53,8 +54,8 @@ export default function RoomsPage() {
 
   useEffect(() => {
     console.log('API URL =', process.env.NEXT_PUBLIC_API_URL);
-    axios
-      .get<Room[]>(`${process.env.NEXT_PUBLIC_API_URL}/rooms`)
+    api
+      .get<Room[]>(`/api/rooms/rooms`)
       .then((res) => {
         console.log('Payload de /rooms:', res.data);
         setRooms(res.data);

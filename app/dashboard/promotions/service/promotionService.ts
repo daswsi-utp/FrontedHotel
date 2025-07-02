@@ -63,6 +63,6 @@ export const updatePromotion = async (id: number, promotion: PromotionRequest) =
   return res.data;
 }
 export const getAllRoomTypes = async (): Promise<RoomType[]> =>{
-  const res = await api.get<RoomType[]>(`/api/rooms/type/all`);
+  const res = await api.get<RoomType[]>(`/api/rooms/rooms/type/all`);
   return res.data;
 }

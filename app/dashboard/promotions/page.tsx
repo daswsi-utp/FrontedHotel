@@ -60,12 +60,13 @@ export default function PromotionsPage() {
       try {
         const data = await service.getAllRoomTypes();
         setRoomTypes(data);
-        console.log(data)
+        console.log(data);
       } catch (error) {
         console.error("Failed to get roomTypes", error);
       }
     }
     fetchRoomTypes();
+    console.log(roomTypes);
   }, []);
 
   const handleRoomTypeSelectionChange = (roomTypeId:number) => {
