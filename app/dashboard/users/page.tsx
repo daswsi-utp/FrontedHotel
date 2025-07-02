@@ -66,7 +66,7 @@ export default function UsersPage() {
         }));
 
         setUsers(mapped);
-      } catch (err: any) {
+      } catch (err) {
         if (err.name !== 'AbortError') {
           console.error(err);
           setError(err.message ?? 'Error al cargar datos');
