@@ -1,18 +1,9 @@
 'use client';
 
-import api from "../../../gateway-services/ConnectionService";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import {
-  BedDouble,
-  Plus,
-  Pencil,
-  Trash2,
-  Eye,
-  Tags,
-} from 'lucide-react';
-import Link from 'next/link';
-import CreateRoomModal from './CreateRoomModal';
+import { BedDouble, Tags } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface RoomType {
   id: number;
@@ -22,7 +13,6 @@ interface RoomType {
 interface Image {
   id: number;
   filename: string;
-  isMain: boolean;
 }
 
 interface Tag {
@@ -43,29 +33,17 @@ interface Room {
   tags: Tag[];
 }
 
-function getMainImageUrl(images: Image[]): string {
-  const main = images.find((img) => img.isMain);
-  if (main) {
-    return `${process.env.NEXT_PUBLIC_API_URL}/rooms/images/${main.filename}?t=${Date.now()}`;
-  } else if (images.length > 0) {
-    return `${process.env.NEXT_PUBLIC_API_URL}/rooms/images/${images[0].filename}?t=${Date.now()}`;
-  } else {
-    return '/images/rooms/default.jpg';
-  }
-}
-
 export default function RoomsPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [selectedType, setSelectedType] = useState('');
+  const router = useRouter(); // ✅ añadido
 
   useEffect(() => {
-    console.log('API URL =', process.env.NEXT_PUBLIC_API_URL);
-    api
-      .get<Room[]>(`/api/rooms/rooms`)
+    axios
+      .get<Room[]>(`${process.env.NEXT_PUBLIC_API_URL}/rooms`)
       .then((res) => {
         setRooms(res.data);
         setLoading(false);
@@ -85,19 +63,6 @@ export default function RoomsPage() {
       });
   }, []);
 
-  const handleDelete = async (roomId: number) => {
-    const confirmDelete = window.confirm("¿Estás seguro de eliminar esta habitación?");
-    if (!confirmDelete) return;
-    try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/rooms/${roomId}`);
-      alert("Habitación eliminada correctamente");
-      setRooms(rooms.filter((room) => room.roomId !== roomId));
-    } catch (error) {
-      console.error("Error al eliminar la habitación:", error);
-      alert("Ocurrió un error al eliminar la habitación");
-    }
-  };
-
   const filteredRooms = selectedType
     ? rooms.filter((room) => room.roomType.name === selectedType)
     : rooms;
@@ -109,16 +74,7 @@ export default function RoomsPage() {
           <BedDouble className="w-6 h-6" />
           Habitaciones
         </h1>
-        <button
-          onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          <Plus className="w-4 h-4" />
-          Nueva Habitación
-        </button>
       </div>
-
-      <CreateRoomModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
 
       <div className="mb-6 flex gap-4 flex-wrap">
         <select
@@ -149,7 +105,11 @@ export default function RoomsPage() {
               className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-lg transition"
             >
               <img
-                src={getMainImageUrl(room.images)}
+                src={
+                  room.images[0]
+                    ? `${process.env.NEXT_PUBLIC_API_URL}/rooms/images/${room.images[0].filename}`
+                    : '/images/rooms/default.jpg'
+                }
                 alt={`Habitación ${room.roomNumber}`}
                 className="w-full h-52 object-cover"
               />
@@ -182,27 +142,13 @@ export default function RoomsPage() {
                   ))}
                 </div>
 
-                <div className="mt-4 flex justify-between">
-                  <button className="text-sm text-blue-600 flex items-center gap-1 hover:underline">
-                    <Eye className="w-4 h-4" />
-                    Ver
+                <div className="mt-4">
+                  <button
+                    onClick={() => router.push(`/rooms/${room.roomId}`)} // ✅ redirección
+                    className="w-full text-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                  >
+                    Reservar
                   </button>
-                  <div className="flex gap-2">
-                    <Link
-                      href={`/dashboard/rooms/${room.roomId}/edit`}
-                      className="text-sm text-yellow-600 flex items-center gap-1 hover:underline"
-                    >
-                      <Pencil className="w-4 h-4" />
-                      Editar
-                    </Link>
-                    <button
-                      className="text-sm text-red-600 flex items-center gap-1 hover:underline"
-                      onClick={() => handleDelete(room.roomId)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Eliminar
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
