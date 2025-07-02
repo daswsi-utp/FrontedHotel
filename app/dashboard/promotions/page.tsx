@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import * as service from '../promotions/service/promotionService'
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
+import { useDebounce } from './hooks/useDebounce';
 
 export default function PromotionsPage() {
   const [loading, setLoading] = useState(true);
@@ -11,6 +12,7 @@ export default function PromotionsPage() {
   const [roomTypes, setRoomTypes] = useState<service.RoomType[]>([]);
   const [filter, setFilter] = useState<'All' | 'Active' | 'Inactive'>('All');
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 500);
   const [selectedProm, setSelectedProm] = useState<service.Promotion | null>(null);
   const [promToBeEdited, setPromToBeEdited] = useState<service.Promotion | null>(null);
   const [editPromotion, setEditPromotion] = useState<service.PromotionRequest | null>(null);
@@ -32,10 +34,10 @@ export default function PromotionsPage() {
   const fetchFilteredPromotions = useCallback(async () => {
       try {
         setLoading(true);
-        const sanitizedSearch = search.trim();
+        const sanitizedSearch = debouncedSearch.trim();
         const sanitizedStatus = filter === "All" ? undefined : filter === "Active";
         const results = await service.searchPromotionsByNameAndOrStatus(
-          sanitizedSearch === "" ? null : sanitizedSearch,
+          sanitizedSearch === "" ? undefined : sanitizedSearch,
           sanitizedStatus
         );
         setPromotions(results)
@@ -46,7 +48,7 @@ export default function PromotionsPage() {
       } finally {
         setLoading(false);
       }
-    }, [search, filter]);
+    }, [debouncedSearch, filter]);
 
   useEffect(() => {
     fetchFilteredPromotions();
@@ -58,7 +60,7 @@ export default function PromotionsPage() {
       try {
         const data = await service.getAllRoomTypes();
         setRoomTypes(data);
-        console.log(roomTypes)
+        console.log(data)
       } catch (error) {
         console.error("Failed to get roomTypes", error);
       }

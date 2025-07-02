@@ -9,7 +9,7 @@ axiosRetry(api, {
   retries: 3,
   retryDelay: retryCount => retryCount * 1000,
   retryCondition: (error) =>
-    axiosRetry.isNetworkError(error) || axiosRetry.isRetryableError(error) || error.response?.status >= 500,
+    axiosRetry.isNetworkError(error) || axiosRetry.isRetryableError(error) || (typeof error.response?.status === 'number' && error.response?.status >= 500),
 });
 
 export default api;

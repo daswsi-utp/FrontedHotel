@@ -67,10 +67,13 @@ export default function UsersPage() {
 
         setUsers(mapped);
       } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error(err);
-          setError(err.message ?? 'Error al cargar datos');
+        if(err instanceof Error){
+          if (err.name !== 'AbortError') {
+                    console.error(err);
+                    setError(err.message ?? 'Error al cargar datos');
+          }
         }
+        
       } finally {
         setLoading(false);
       }
