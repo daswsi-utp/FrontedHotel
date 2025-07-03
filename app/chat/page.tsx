@@ -15,7 +15,7 @@ export default function ChatPage() {
     const stompClientRef = useRef<Client | null>(null);
 
     useEffect(() => {
-        const socket = new SockJS("http://localhost:54518/ws-message");
+        const socket = new SockJS("http://localhost:52432/ws-message");
         const client = new Client({
             webSocketFactory: () => socket,
             debug: (str) => console.log(str),
