@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Eye, Pencil } from 'lucide-react';
 import Link from 'next/link';
 
@@ -8,77 +8,63 @@ interface Reservation {
   id: number;
   guestName: string;
   guestEmail: string;
-  roomName: string;
-  checkIn: string;   // ISO o formato legible
+  roomNumber: number;
+  checkIn: string;   
   checkOut: string;
   total: number;
-  status: 'Confirmed' | 'Pending' | 'Cancelled';
+  status: 'CONFIRMED' | 'PENDING' | 'CANCELLED';
 }
 
 export default function ReservationsPage() {
-  const [reservations] = useState<Reservation[]>([
-    {
-      id: 4,
-      guestName: 'Jennifer Adams',
-      guestEmail: 'j.adams@example.com',
-      roomName: 'Family Suite',
-      checkIn: 'Mar 24, 2025',
-      checkOut: 'Mar 31, 2025',
-      total: 3850,
-      status: 'Confirmed',
-    },
-    {
-      id: 3,
-      guestName: 'Michael Brown',
-      guestEmail: 'm.brown@example.com',
-      roomName: 'Royal Suite',
-      checkIn: 'Mar 31, 2025',
-      checkOut: 'Apr 04, 2025',
-      total: 3400,
-      status: 'Pending',
-    },
-    {
-      id: 5,
-      guestName: 'David Wilson',
-      guestEmail: 'd.wilson@example.com',
-      roomName: 'Executive Room',
-      checkIn: 'Mar 17, 2025',
-      checkOut: 'Mar 20, 2025',
-      total: 1200,
-      status: 'Cancelled',
-    },
-    {
-      id: 2,
-      guestName: 'Sarah Johnson',
-      guestEmail: 'sarah.j@example.com',
-      roomName: 'Garden View Room',
-      checkIn: 'Mar 09, 2025',
-      checkOut: 'Mar 11, 2025',
-      total: 440,
-      status: 'Confirmed',
-    },
-    {
-      id: 1,
-      guestName: 'John Smith',
-      guestEmail: 'john.smith@example.com',
-      roomName: 'Deluxe Ocean View',
-      checkIn: 'Mar 14, 2025',
-      checkOut: 'Mar 19, 2025',
-      total: 1750,
-      status: 'Confirmed',
-    },
-  ]);
-
-  const [filter, setFilter] = useState<'All' | 'Confirmed' | 'Pending' | 'Cancelled'>('All');
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [filter, setFilter] = useState<'All' | 'CONFIRMED' | 'PENDING' | 'CANCELLED'>('All');
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_URL}/detail`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Reservation[] = await response.json();
+        setReservations(data);
+      } catch (err) {
+        console.error("Failed to fetch reservations:", err);
+        setError("Failed to load reservations. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (API_URL) {
+      fetchReservations();
+    } else {
+      setError("API URL is not defined. Please check your .env.local file.");
+      setLoading(false);
+    }
+  }, [API_URL]);
 
   const filtered = reservations
     .filter(r => filter === 'All' || r.status === filter)
     .filter(r =>
-      `${r.guestName} ${r.guestEmail} ${r.roomName}`
+      `${r.guestName} ${r.guestEmail} ${r.roomNumber}`
         .toLowerCase()
         .includes(search.toLowerCase())
     );
+
+  if (loading) {
+    return <div className="p-6 text-center">Loading reservations...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-center text-red-600">{error}</div>;
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -96,7 +82,7 @@ export default function ReservationsPage() {
 
       {/* Filters */}
       <div className="flex gap-2">
-        {(['All', 'Confirmed', 'Pending', 'Cancelled'] as const).map(option => (
+        {(['All', 'CONFIRMED', 'PENDING', 'CANCELLED'] as const).map(option => (
           <button
             key={option}
             onClick={() => setFilter(option)}
@@ -131,16 +117,16 @@ export default function ReservationsPage() {
                   <div className="font-medium">{res.guestName}</div>
                   <div className="text-gray-500 text-xs">{res.guestEmail}</div>
                 </td>
-                <td className="px-4 py-3 text-sm">{res.roomName}</td>
+                <td className="px-4 py-3 text-sm">{res.roomNumber}</td>
                 <td className="px-4 py-3 text-sm">{res.checkIn}</td>
                 <td className="px-4 py-3 text-sm">{res.checkOut}</td>
                 <td className="px-4 py-3 text-sm">${res.total}</td>
                 <td className="px-4 py-3 text-sm">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      res.status === 'Confirmed'
+                      res.status === 'CONFIRMED'
                         ? 'bg-green-100 text-green-800'
-                        : res.status === 'Pending'
+                        : res.status === 'PENDING'
                         ? 'bg-yellow-100 text-yellow-800'
                         : 'bg-red-100 text-red-800'
                     }`}
@@ -149,9 +135,11 @@ export default function ReservationsPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm space-x-2">
-                  <button className="text-blue-600 underline text-xs flex items-center gap-1">
-                    <Eye className="w-4 h-4" /> View
-                  </button>
+                  <Link href={`/dashboard/reservations/${res.id}`}>
+                    <button className="text-blue-600 underline text-xs flex items-center gap-1">
+                      <Eye className="w-4 h-4" /> View
+                    </button>
+                  </Link>
                   <Link href={`/dashboard/reservations/${res.id}/edit`}>
                     <button className="text-green-600 underline text-xs flex items-center gap-1">
                       <Pencil className="w-4 h-4" /> Edit

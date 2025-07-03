@@ -39,7 +39,7 @@ export default function RoomsPage() {
   const [error, setError] = useState('');
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [selectedType, setSelectedType] = useState('');
-  const router = useRouter(); // ✅ añadido
+  const router = useRouter();
 
   useEffect(() => {
     axios
@@ -49,7 +49,7 @@ export default function RoomsPage() {
         setLoading(false);
       })
       .catch((err) => {
-        setError('Error al obtener habitaciones');
+        setError('Failed to fetch rooms.');
         console.error(err);
         setLoading(false);
       });
@@ -58,7 +58,7 @@ export default function RoomsPage() {
       .get<RoomType[]>(`${process.env.NEXT_PUBLIC_API_URL}/roomtype`)
       .then((res) => setRoomTypes(res.data))
       .catch((err) => {
-        console.error('Error al obtener tipos de habitación:', err);
+        console.error('Failed to fetch room types:', err);
         setRoomTypes([]);
       });
   }, []);
@@ -68,21 +68,19 @@ export default function RoomsPage() {
     : rooms;
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <BedDouble className="w-6 h-6" />
-          Habitaciones
+    <div className="p-4 md:p-8 max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 flex items-center gap-3">
+          <BedDouble className="w-7 h-7 text-green-600" />
+          Available Rooms
         </h1>
-      </div>
 
-      <div className="mb-6 flex gap-4 flex-wrap">
         <select
-          className="border px-3 py-2 rounded-md text-sm"
+          className="border border-gray-300 px-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
           onChange={(e) => setSelectedType(e.target.value)}
           value={selectedType}
         >
-          <option value="">Todos los tipos</option>
+          <option value="">All Room Types</option>
           {roomTypes.map((type) => (
             <option key={type.id} value={type.name}>
               {type.name}
@@ -92,17 +90,17 @@ export default function RoomsPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-600">Cargando habitaciones...</p>
+        <div className="text-gray-600 text-center py-12">Loading rooms...</div>
       ) : error ? (
-        <p className="text-red-600">{error}</p>
+        <div className="text-red-600 text-center py-12">{error}</div>
       ) : filteredRooms.length === 0 ? (
-        <p className="text-gray-600">No hay habitaciones registradas.</p>
+        <div className="text-gray-600 text-center py-12">No rooms found.</div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {filteredRooms.map((room) => (
             <div
               key={`room-${room.roomId}`}
-              className="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-lg transition"
+              className="bg-white rounded-xl shadow hover:shadow-lg transition-all overflow-hidden flex flex-col"
             >
               <img
                 src={
@@ -110,31 +108,33 @@ export default function RoomsPage() {
                     ? `${process.env.NEXT_PUBLIC_API_URL}/rooms/images/${room.images[0].filename}`
                     : '/images/rooms/default.jpg'
                 }
-                alt={`Habitación ${room.roomNumber}`}
-                className="w-full h-52 object-cover"
+                alt={`Room ${room.roomNumber}`}
+                className="w-full h-56 object-cover transition-transform duration-300 hover:scale-105"
               />
-              <div className="p-4">
-                <h2 className="text-xl font-semibold mb-1">
-                  Habitación {room.roomNumber} – {room.roomType.name}
-                </h2>
-                <p className="text-sm text-gray-600 mb-2">
-                  {room.availabilityStatus === 'AVAILABLE'
-                    ? 'Disponible'
-                    : 'No disponible'}
-                </p>
-                <p className="text-md text-gray-800 mb-1">
-                  <strong>S/ {room.pricePerNight.toFixed(2)}</strong> por noche
-                </p>
-                <p className="text-sm text-gray-600 mb-2">
-                  Capacidad: {room.capacity} | Tamaño: {room.roomSize} m²
-                </p>
-                <p className="text-sm text-gray-600 mb-4">{room.description}</p>
 
-                <div className="flex flex-wrap gap-2 mt-3">
+              <div className="p-5 flex flex-col flex-grow">
+                <h2 className="text-lg font-semibold text-gray-800 mb-1">
+                  Room {room.roomNumber} – {room.roomType.name}
+                </h2>
+                <p className={`text-sm font-medium mb-2 ${room.availabilityStatus === 'AVAILABLE' ? 'text-green-600' : 'text-red-500'}`}>
+                  {room.availabilityStatus === 'AVAILABLE' ? 'Available' : 'Unavailable'}
+                </p>
+
+                <p className="text-gray-700 text-md font-medium mb-1">
+                  S/ {room.pricePerNight.toFixed(2)} <span className="text-sm font-normal">per night</span>
+                </p>
+
+                <p className="text-sm text-gray-500 mb-2">
+                  Capacity: {room.capacity} guests | Size: {room.roomSize} m²
+                </p>
+
+                <p className="text-sm text-gray-600 mb-4 flex-grow">{room.description}</p>
+
+                <div className="flex flex-wrap gap-2 mb-4">
                   {room.tags.map((tag) => (
                     <span
                       key={`tag-${room.roomId}-${tag.id}`}
-                      className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1"
+                      className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full inline-flex items-center gap-1"
                     >
                       <Tags className="w-3 h-3" />
                       {tag.name}
@@ -142,14 +142,12 @@ export default function RoomsPage() {
                   ))}
                 </div>
 
-                <div className="mt-4">
-                  <button
-                    onClick={() => router.push(`/rooms/${room.roomId}`)} // ✅ redirección
-                    className="w-full text-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
-                  >
-                    Reservar
-                  </button>
-                </div>
+                <button
+                  onClick={() => router.push(`/rooms/${room.roomId}`)}
+                  className="mt-auto w-full bg-green-600 text-white text-sm font-medium py-2 rounded-md hover:bg-green-700 transition"
+                >
+                  Book Now
+                </button>
               </div>
             </div>
           ))}
