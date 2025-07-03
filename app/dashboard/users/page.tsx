@@ -149,9 +149,6 @@ export default function UsersPage() {
                   </span>
                 </td>
                 <td className="px-4 py-2 space-x-2">
-                  <button className="px-3 py-1 border rounded text-blue-600 hover:bg-blue-50">
-                    View
-                  </button>
                   <button className="px-3 py-1 border rounded text-green-600 hover:bg-green-50">
                     Edit
                   </button>

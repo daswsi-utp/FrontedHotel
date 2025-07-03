@@ -96,7 +96,7 @@ export default function HomePage() {
         <div className="grid md:grid-cols-2 gap-10 items-center">
           <div>
             <Image
-              src="/about-hotel.jpg"
+              src="/poublic/images/default.jpg"
               alt="Sobre Munay Wasi"
               width={500}
               height={300}

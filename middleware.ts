@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const publicExact = ['/', '/auth/login', '/signup', '/favicon.ico', '/rooms']
+const publicExact = ['/', '/auth/login','/auth/register', '/signup', '/favicon.ico', '/rooms']
 
 function getJwtPayload(token: string): { roles?: string[] } | null {
   try {
