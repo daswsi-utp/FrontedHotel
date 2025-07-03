@@ -7,10 +7,23 @@ interface User {
   name: string;
   email: string;
   phone: string;
-  joinDate: string;     // ⇢ ya formateado a algo legible
+  joinDate: string;     // ⇢ ya formateado a algo legible     // ⇢ ya formateado a algo legible
   bookings: number;
   totalSpent: number;
   status: 'Active' | 'Inactive';
+}
+
+
+interface RawStat {
+  id: number;
+  userName: string;
+  userLastName: string;
+  userEmail: string;
+  cellPhone: string;
+  firstBookingDate: string;   // ISO‐8601
+  totalBookings: number;
+  totalAmount: number;
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
 /**
@@ -32,6 +45,8 @@ interface RawStat {
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [filter, setFilter] = useState<'All' | 'Active' | 'Inactive'>('All');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -78,9 +93,50 @@ export default function UsersPage() {
 
     load();
     return () => controller.abort(); // limpia si el componente se desmonta
+    const controller = new AbortController();
+
+    async function load() {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/bookings/stats`,
+          { signal: controller.signal, cache: 'no-store' } 
+        );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data: RawStat[] = await res.json();
+        const mapped: User[] = data.map((s) => ({
+          id: s.id,
+          name: `${s.userName} ${s.userLastName}`,
+          email: s.userEmail,
+          phone: s.cellPhone,
+          joinDate: new Date(s.firstBookingDate).toLocaleDateString('en-US', {
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric',
+          }),
+          bookings: s.totalBookings,
+          totalSpent: s.totalAmount,
+          status: s.status === 'ACTIVE' ? 'Active' : 'Inactive',
+        }));
+
+        setUsers(mapped);
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+          setError(err.message ?? 'Error al cargar datos');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
+    return () => controller.abort(); 
   }, []);
 
   // 2️⃣ Filtro local
+  const filtered =
   const filtered =
     filter === 'All' ? users : users.filter((u) => u.status === filter);
 
@@ -89,6 +145,12 @@ export default function UsersPage() {
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">Registered Users</h1>
 
+      {loading && <p className="mb-4">Cargando…</p>}
+      {error && (
+        <p className="mb-4 text-red-600">
+          {error} (revisa consola y CORS en el backend)
+        </p>
+      )}
       {/* Estado de carga o error */}
       {loading && <p className="mb-4">Cargando…</p>}
       {error && (
@@ -102,13 +164,16 @@ export default function UsersPage() {
         <input
           type="text"
           placeholder="Search by name, email, or phone…"
+          placeholder="Search by name, email, or phone…"
           className="w-full md:w-1/2 border px-4 py-2 rounded-md"
+          // TODO: Implementar búsqueda si la necesitas
           // TODO: Implementar búsqueda si la necesitas
         />
         <div className="flex gap-2">
-          {(['All', 'Active', 'Inactive'] as const).map((value) => (
+          {((['All', 'Active', 'Inactive'] as const) as const).map((value) => (
             <button
               key={value}
+              onClick={() => setFilter(value)}
               onClick={() => setFilter(value)}
               className={`px-4 py-2 rounded-md border ${
                 filter === value
@@ -142,10 +207,19 @@ export default function UsersPage() {
               <tr key={u.id}>
                 <td className="px-4 py-2 font-medium">#{u.id}</td>
                 <td className="px-4 py-2">{u.name}</td>
+            {filtered.map((u) => (
+              <tr key={u.id}>
+                <td className="px-4 py-2 font-medium">#{u.id}</td>
+                <td className="px-4 py-2">{u.name}</td>
                 <td className="px-4 py-2">
                   <div>{u.email}</div>
                   <div className="text-xs text-gray-500">{u.phone}</div>
+                  <div>{u.email}</div>
+                  <div className="text-xs text-gray-500">{u.phone}</div>
                 </td>
+                <td className="px-4 py-2">{u.joinDate}</td>
+                <td className="px-4 py-2">{u.bookings}</td>
+                <td className="px-4 py-2">${u.totalSpent}</td>
                 <td className="px-4 py-2">{u.joinDate}</td>
                 <td className="px-4 py-2">{u.bookings}</td>
                 <td className="px-4 py-2">${u.totalSpent}</td>
@@ -153,10 +227,12 @@ export default function UsersPage() {
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       u.status === 'Active'
+                      u.status === 'Active'
                         ? 'bg-green-100 text-green-700'
                         : 'bg-red-100 text-red-700'
                     }`}
                   >
+                    {u.status}
                     {u.status}
                   </span>
                 </td>
@@ -176,3 +252,4 @@ export default function UsersPage() {
     </div>
   );
 }
+
