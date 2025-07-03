@@ -26,7 +26,12 @@ interface Room {
   images: { id: number; filename: string; main: boolean }[];
   tags: { id: number; name: string }[];
 }
-
+  function getToken(): string {
+    const raw = document.cookie
+      .split('; ')
+      .find(c => c.startsWith('access_token='));
+    return raw ? raw.split('=')[1] : '';
+  }
 export default function RoomDetailPage() {
   const { id } = useParams();
   const [room, setRoom] = useState<Room | null>(null);
@@ -72,30 +77,50 @@ export default function RoomDetailPage() {
   }, [checkInDate, checkOutDate, room]);
 
   const handleBooking = async () => {
-    if (!checkInDate || !checkOutDate || !room) return;
+  if (!checkInDate || !checkOutDate || !room) return;
 
-    setLoading(true);
-    setBookingMessage(null);
+  setLoading(true);
+  setBookingMessage(null);
 
-    if (totalNights <= 0) {
-      setBookingMessage({ type: 'error', text: 'Check-out date must be after check-in date.' });
-      setLoading(false);
-      return;
-    }
+  if (totalNights <= 0) {
+    setBookingMessage({ type: 'error', text: 'Check-out date must be after check-in date.' });
+    setLoading(false);
+    return;
+  }
 
+  try {
+    // 1️⃣ Leer token y extraer username
+    const raw = document.cookie.split('; ').find(c => c.startsWith('access_token='));
+    const token = raw ? raw.split('=')[1] : '';
+    const payload = JSON.parse(atob(token.split('.')[1])) as { sub: string };
+    const username = payload.sub;
+
+    // 2️⃣ Llamar a /api/users/username/{username} -> NO doblar /api
+    const userResp = await axios.get<{ id: number }>(
+      `${process.env.NEXT_PUBLIC_API_URL}/users/username/${encodeURIComponent(username)}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const userId = userResp.data.id;
+
+    // 3️⃣ Crear payload con userId dinámico
     const bookingPayload = {
-      userId:1,
+      userId,
       roomId: room.roomId,
       checkIn: checkInDate,
       checkOut: checkOutDate,
-      guests: guests
+      guests,
     };
 
     setBookingData(bookingPayload);
-    
     setIsPaymentModalOpen(true);
+  } catch (err: any) {
+    console.error('Error al preparar la reserva:', err);
+    setBookingMessage({ type: 'error', text: 'No se pudo procesar la reserva. Intenta de nuevo.' });
+  } finally {
     setLoading(false);
-  };
+  }
+};
+
 
   const handleBookingSuccess = () => {
     setBookingMessage({ type: 'success', text: 'Booking confirmed! Thank you for your reservation.' });

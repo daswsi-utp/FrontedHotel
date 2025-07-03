@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock } from 'lucide-react';
 import Link from 'next/link';
-import axios from 'axios';
+import api from '@/lib/api';
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+  });
   const router = useRouter();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL!; 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -26,37 +28,33 @@ export default function LoginPage() {
 
     try {
       // 1️⃣ Login (OAuth)
-      const loginResp = await axios.post(
-        `${API_URL}/oauth/login`,
-        { username, password },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
+      const loginResp = await api.post('/oauth/login', {
+        username,
+        password,
+      });
       const token = loginResp.data.access_token;
-      localStorage.setItem('access_token', token);
 
-      // 2️⃣ Decodificar JWT para extraer sub (username) y roles
+      // 2️⃣ Guardar en cookie para middleware
+      document.cookie = [
+        `access_token=${token}`,
+        'Path=/',
+        'Secure',         // usa HTTPS en producción
+        'SameSite=Strict' // protege contra CSRF
+      ].join('; ');
+
+      // 3️⃣ Decodificar JWT para extraer roles
       const base64 = token.split('.')[1];
       const payload: { sub: string; roles?: string[] } = JSON.parse(atob(base64));
       const roles = payload.roles || [];
-      const loggedUsername = payload.sub;
-
-      // 3️⃣ Obtener datos del usuario
-      const userResp = await axios.get(
-        `${API_URL}/users/username/${encodeURIComponent(loggedUsername)}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const user = userResp.data;
-      // (Opcional) almacenar user en contexto o state global
 
       // 4️⃣ Redirección según rol
       if (roles.includes('ROLE_ADMIN') && roles.includes('ROLE_USER')) {
         router.push('/dashboard');
       } else if (roles.includes('ROLE_USER')) {
-        router.push('http://localhost:3000/');
+        router.push('/rooms');
       } else {
         alert('Rol no reconocido. Contacta al administrador.');
       }
-
     } catch (err: any) {
       console.error(err);
       alert(err.response?.data?.error || 'Error en login. Intenta de nuevo.');

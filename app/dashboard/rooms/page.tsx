@@ -53,6 +53,14 @@ function getMainImageUrl(images: Image[]): string {
   }
 }
 
+// Helper to extract token from cookie
+function getToken(): string {
+  const raw = document.cookie
+    .split('; ')
+    .find((c) => c.startsWith('access_token='));
+  return raw ? raw.split('=')[1] : '';
+}
+
 export default function RoomsPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
@@ -84,15 +92,15 @@ export default function RoomsPage() {
   }, []);
 
   const handleDelete = async (roomId: number) => {
-    const confirmDelete = window.confirm("¿Estás seguro de eliminar esta habitación?");
+    const confirmDelete = window.confirm('¿Estás seguro de eliminar esta habitación?');
     if (!confirmDelete) return;
     try {
       await api.delete(`/api/rooms/rooms/${roomId}`);
       alert("Habitación eliminada correctamente");
       setRooms(rooms.filter((room) => room.roomId !== roomId));
     } catch (error) {
-      console.error("Error al eliminar la habitación:", error);
-      alert("Ocurrió un error al eliminar la habitación");
+      console.error('Error al eliminar la habitación:', error);
+      alert('Ocurrió un error al eliminar la habitación');
     }
   };
 

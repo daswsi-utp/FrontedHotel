@@ -17,19 +17,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
 
   const handleLogout = () => {
-    // 1. Eliminar token (o cookies)
+    // Limpieza de token…
     localStorage.removeItem('access_token');
-    // si usas refreshToken en cookie:
-    // document.cookie = 'refresh_token=; Max-Age=0; path=/;';
-
-    // 2. Redirigir a login
+    document.cookie = [
+      'access_token=;',
+      'Path=/;',
+      `Expires=${new Date(0).toUTCString()};`,
+      'SameSite=Strict;'
+    ].join(' ');
     router.push('/auth/login');
   };
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-64 bg-slate-800 text-white p-6 flex flex-col justify-between">
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar fijo */}
+      <aside className="w-64 bg-slate-800 text-white p-6 flex flex-col justify-between h-full">
         <div>
           <h2 className="text-2xl font-bold mb-8">Hotel Admin MUNAY WASI</h2>
           <nav className="flex flex-col space-y-4">
@@ -51,10 +53,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <NavLink href="/dashboard/message" icon={<Mail size={20} />}>
               Messages
             </NavLink>
-          </nav>
+            </nav>
         </div>
 
-        {/* Logout al fondo */}
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition text-red-100 hover:text-white"
@@ -64,8 +65,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </button>
       </aside>
 
-      {/* Contenido principal */}
-      <main className="flex-1 bg-gray-50 p-8">{children}</main>
+      {/* Contenido scrollable */}
+      <main className="flex-1 bg-gray-50 p-8 overflow-y-auto">
+        {children}
+      </main>
     </div>
   );
 }
