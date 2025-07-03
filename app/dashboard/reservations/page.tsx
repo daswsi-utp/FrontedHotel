@@ -67,11 +67,10 @@ export default function ReservationsPage() {
           <button
             key={option}
             onClick={() => setFilter(option)}
-            className={`px-3 py-1 rounded-full border ${
-              filter === option
+            className={`px-3 py-1 rounded-full border ${filter === option
                 ? 'bg-blue-600 text-white'
                 : 'bg-white text-gray-700'
-            }`}
+              }`}
           >
             {option}
           </button>
@@ -101,27 +100,47 @@ export default function ReservationsPage() {
                 <td className="px-4 py-3 text-sm">${res.total}</td>
                 <td className="px-4 py-3 text-sm">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      res.status === 'CONFIRMED'
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${res.status === 'CONFIRMED'
                         ? 'bg-green-100 text-green-800'
                         : res.status === 'PENDING'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
                   >
                     {res.status}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm space-x-2">
-                  <button className="text-blue-600 underline text-xs flex items-center gap-1">
-                    <Eye className="w-4 h-4" /> View
+                  <button
+                    onClick={async () => {
+                      const updated = { ...res, status: 'ACTIVE' }; 
+                      try {
+                        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/${res.id}`, {
+                          method: 'PUT',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify(updated),
+                        });
+
+                        if (response.ok) {
+                          const newReservation = await response.json();
+                          setReservations(prev =>
+                            prev.map(r => (r.id === newReservation.id ? newReservation : r))
+                          );
+                        } else {
+                          console.error('Failed to update reservation');
+                        }
+                      } catch (err) {
+                        console.error('Error updating reservation:', err);
+                      }
+                    }}
+                    className="text-green-600 underline text-xs flex items-center gap-1"
+                  >
+                    <Pencil className="w-4 h-4" /> Set ACTIVE
                   </button>
-                  <Link href={`/dashboard/reservations/${res.id}/save`}>
-                    <button className="text-green-600 underline text-xs flex items-center gap-1">
-                      <Pencil className="w-4 h-4" /> Edit
-                    </button>
-                  </Link>
                 </td>
+
               </tr>
             ))}
             {filtered.length === 0 && (
