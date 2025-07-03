@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { BedDouble, Tags } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import api from "../gateway-services/ConnectionService";
 
 interface RoomType {
   id: number;
@@ -42,8 +42,8 @@ export default function RoomsPage() {
   const router = useRouter(); // ✅ añadido
 
   useEffect(() => {
-    axios
-      .get<Room[]>(`${process.env.NEXT_PUBLIC_API_URL}/rooms`)
+    api
+      .get<Room[]>(`/api/rooms/rooms`)
       .then((res) => {
         setRooms(res.data);
         setLoading(false);
@@ -54,8 +54,8 @@ export default function RoomsPage() {
         setLoading(false);
       });
 
-    axios
-      .get<RoomType[]>(`${process.env.NEXT_PUBLIC_API_URL}/roomtype`)
+    api
+      .get<RoomType[]>(`/api/rooms/roomtype`)
       .then((res) => setRoomTypes(res.data))
       .catch((err) => {
         console.error('Error al obtener tipos de habitación:', err);

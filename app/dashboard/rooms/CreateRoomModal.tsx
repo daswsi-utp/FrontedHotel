@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import axios from "axios";
+import api from "../../gateway-services/ConnectionService";
 
 interface RoomType {
   id: number;
@@ -37,11 +37,11 @@ export default function CreateRoomModal({
 
 
   useEffect(() => {
-    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/roomtype`).then((res) => {
+    api.get(`/api/rooms/roomtype`).then((res) => {
       setRoomTypes(res.data);
     });
 
-    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tags`).then((res) => {
+    api.get(`/api/rooms/tags`).then((res) => {
       setTags(res.data);
     });
   }, []);
@@ -94,11 +94,11 @@ export default function CreateRoomModal({
     });
 
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/rooms`, formDataToSend);
+      await api.post(`/api/rooms/rooms`, formDataToSend);
       alert("Habitación creada");
       onClose();
       window.location.reload();
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error al crear habitación:", err);
       alert("Error al guardar habitación");
     }

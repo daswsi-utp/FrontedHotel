@@ -17,7 +17,7 @@ export interface Promotion{
   isActive: boolean;
   minStay: number;
   roomApplicability: RoomApplicability;
-  roomsTypes: RoomType[];
+  rooms: RoomType[];
 }
 
 //Promotion to be registered or updated
@@ -36,7 +36,7 @@ export interface PromotionRequest{
 
 export interface RoomType{
   roomTypeId: number;
-  name: string;
+  roomType: string;
 }
 
 export const getAllPromotions = async (): Promise<Promotion[]> =>{

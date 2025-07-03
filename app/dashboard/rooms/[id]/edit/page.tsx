@@ -2,7 +2,7 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios';
+import api from "../../../../gateway-services/ConnectionService";
 
 interface RoomType { id: number; name: string; }
 interface Tag { id: number; name: string; }
@@ -43,7 +43,7 @@ export default function EditRoomPage() {
 
   useEffect(() => {
     if (!id) return;
-    axios.get<Room>(`${process.env.NEXT_PUBLIC_API_URL}/rooms/${id}`)
+    api.get<Room>(`/api/rooms/rooms/${id}`)
       .then(res => {
         const r = res.data;
         setRoom(r);
@@ -59,10 +59,10 @@ export default function EditRoomPage() {
         setMainImageId(main?.id ?? null);
       });
 
-    axios.get<RoomType[]>(`${process.env.NEXT_PUBLIC_API_URL}/roomtype`)
+    api.get<RoomType[]>(`/api/rooms/roomtype`)
       .then(res => setRoomTypes(res.data));
 
-    axios.get<Tag[]>(`${process.env.NEXT_PUBLIC_API_URL}/tags`)
+    api.get<Tag[]>(`/api/rooms/tags`)
       .then(res => setTags(res.data));
   }, [id]);
 
@@ -118,7 +118,7 @@ export default function EditRoomPage() {
     }
 
     try {
-      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/rooms/${room.roomId}`, data);
+      await api.put(`/api/rooms/rooms/${room.roomId}`, data);
       alert('Habitación actualizada');
       router.back();
     } catch (err) {

@@ -2,8 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-
+import api from "../../gateway-services/ConnectionService";
 interface Room {
   roomId: number;
   roomNumber: number;
@@ -23,8 +22,8 @@ export default function RoomDetailPage() {
 
   useEffect(() => {
     if (!id) return;
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/rooms/${id}`)
+    api
+      .get(`/api/rooms/rooms/${id}`)
       .then((res) => setRoom(res.data))
       .catch((err) => console.error('Error al cargar habitación', err));
   }, [id]);

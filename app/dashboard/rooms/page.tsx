@@ -1,8 +1,7 @@
 'use client';
 
-import api from "../../../gateway-services/ConnectionService";
+import api from "../../gateway-services/ConnectionService";
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import {
   BedDouble,
   Plus,
@@ -63,7 +62,6 @@ export default function RoomsPage() {
   const [selectedType, setSelectedType] = useState('');
 
   useEffect(() => {
-    console.log('API URL =', process.env.NEXT_PUBLIC_API_URL);
     api
       .get<Room[]>(`/api/rooms/rooms`)
       .then((res) => {
@@ -76,8 +74,8 @@ export default function RoomsPage() {
         setLoading(false);
       });
 
-    axios
-      .get<RoomType[]>(`${process.env.NEXT_PUBLIC_API_URL}/roomtype`)
+    api
+      .get<RoomType[]>(`/api/rooms/roomtype`)
       .then((res) => setRoomTypes(res.data))
       .catch((err) => {
         console.error('Error al obtener tipos de habitación:', err);
@@ -89,7 +87,7 @@ export default function RoomsPage() {
     const confirmDelete = window.confirm("¿Estás seguro de eliminar esta habitación?");
     if (!confirmDelete) return;
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/rooms/${roomId}`);
+      await api.delete(`/api/rooms/rooms/${roomId}`);
       alert("Habitación eliminada correctamente");
       setRooms(rooms.filter((room) => room.roomId !== roomId));
     } catch (error) {

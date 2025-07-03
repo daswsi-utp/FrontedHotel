@@ -1,6 +1,6 @@
 "use client";
 
-import api from "../../../gateway-services/ConnectionService";
+import api from "../../gateway-services/ConnectionService";
 import { useEffect, useState } from "react";
 
 interface Message {

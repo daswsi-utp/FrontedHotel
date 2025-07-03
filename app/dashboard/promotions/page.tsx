@@ -60,13 +60,11 @@ export default function PromotionsPage() {
       try {
         const data = await service.getAllRoomTypes();
         setRoomTypes(data);
-        console.log(data);
       } catch (error) {
         console.error("Failed to get roomTypes", error);
       }
     }
     fetchRoomTypes();
-    console.log(roomTypes);
   }, []);
 
   const handleRoomTypeSelectionChange = (roomTypeId:number) => {
@@ -365,7 +363,7 @@ export default function PromotionsPage() {
                             checked={newPromotion.roomsIds.includes(room.roomTypeId)}
                             onChange={() => handleRoomTypeSelectionChange(room.roomTypeId)}
                           />
-                          {room.name}
+                          {room.roomType}
                         </label>
                       ))}
                     </div>
@@ -472,8 +470,8 @@ export default function PromotionsPage() {
                 <div>
                   <h4 className="text-lg font-semibold text-slate-800">Applied Room Types</h4>
                   <ul className="list-disc list-inside">
-                    {selectedProm.roomsTypes?.map((roomType) => (
-                      <li key={roomType.roomTypeId}>{roomType.name}</li>
+                    {selectedProm.rooms?.map((room) => (
+                      <li key={room.roomTypeId}>{room.roomType}</li>
                     ))}
                   </ul>
                 </div>
@@ -647,7 +645,7 @@ export default function PromotionsPage() {
                               checked={editPromotion.roomsIds.includes(room.roomTypeId)}
                               onChange={() => handleEditRoomTypeSelectionChange(room.roomTypeId)}
                             />
-                            {room.name}
+                            {room.roomType}
                           </label>
                         ))}
                       </div>
