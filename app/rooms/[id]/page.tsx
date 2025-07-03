@@ -38,7 +38,6 @@ export default function RoomDetailPage() {
   const [loading, setLoading] = useState(false);
   const [bookingMessage, setBookingMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
-  // Estado para controlar el modal de pago
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [bookingData, setBookingData] = useState<any>(null);
 
@@ -85,26 +84,22 @@ export default function RoomDetailPage() {
       return;
     }
 
-    // Preparar datos para la reserva
     const bookingPayload = {
-      userId: 1, // Esto debería venir de tu sistema de autenticación
+      userId:1,
       roomId: room.roomId,
       checkIn: checkInDate,
       checkOut: checkOutDate,
       guests: guests
     };
 
-    // Guardamos los datos para usar en el modal
     setBookingData(bookingPayload);
     
-    // Abrimos el modal de pago en lugar de hacer la reserva directamente
     setIsPaymentModalOpen(true);
     setLoading(false);
   };
 
   const handleBookingSuccess = () => {
     setBookingMessage({ type: 'success', text: 'Booking confirmed! Thank you for your reservation.' });
-    // Actualizar el estado de la habitación localmente
     if (room) {
       setRoom({
         ...room,
@@ -127,9 +122,7 @@ export default function RoomDetailPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Gallery + Details */}
       <div className="lg:col-span-2 space-y-8">
-        {/* Image Gallery */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 rounded-2xl overflow-hidden">
           {room.images.map((img) => (
             <img
@@ -141,7 +134,6 @@ export default function RoomDetailPage() {
           ))}
         </div>
 
-        {/* Room Details */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex justify-between items-start mb-4">
             <div>
@@ -197,12 +189,10 @@ export default function RoomDetailPage() {
         </div>
       </div>
 
-      {/* Booking Card */}
       <div className="sticky top-8 border border-gray-200 rounded-2xl shadow-md p-6 bg-white space-y-6 h-fit">
         <h2 className="text-2xl font-bold text-gray-900">Book Your Stay</h2>
         
         <div className="space-y-4">
-          {/* Date Selector */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
@@ -226,7 +216,6 @@ export default function RoomDetailPage() {
             </div>
           </div>
 
-          {/* Guest Selector */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Guests</label>
             <select
@@ -243,7 +232,6 @@ export default function RoomDetailPage() {
           </div>
         </div>
 
-        {/* Price Summary */}
         <div className="bg-gray-50 p-4 rounded-lg">
           <div className="flex justify-between mb-2">
             <span className="text-gray-600">${room.pricePerNight.toFixed(2)} × {totalNights} night{totalNights !== 1 ? 's' : ''}</span>
@@ -289,7 +277,6 @@ export default function RoomDetailPage() {
           )}
         </button>
 
-        {/* Booking Details */}
         {totalNights > 0 && checkInDate && checkOutDate && (
           <div className="text-sm text-gray-500 pt-4 border-t border-gray-100">
             <p className="font-medium mb-1">Your reservation details:</p>
@@ -301,7 +288,6 @@ export default function RoomDetailPage() {
         )}
       </div>
 
-      {/* Payment Modal */}
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}

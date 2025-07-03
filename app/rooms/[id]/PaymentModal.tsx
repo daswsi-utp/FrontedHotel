@@ -1,4 +1,3 @@
-// Payment modal with card (full billing form), Yape, and Plin (simple)
 'use client';
 
 import { useState } from 'react';

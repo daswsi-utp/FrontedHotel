@@ -33,6 +33,13 @@ interface Room {
   tags: Tag[];
 }
 
+// ✅ Mapeo de estados de disponibilidad a texto y color
+const availabilityMap: Record<string, { label: string; color: string }> = {
+  AVAILABLE: { label: 'Available', color: 'text-green-600' },
+  BOOKED: { label: 'Booked', color: 'text-red-500' },
+  MAINTENANCE: { label: 'Maintenance', color: 'text-yellow-500' },
+};
+
 export default function RoomsPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,60 +104,72 @@ export default function RoomsPage() {
         <div className="text-gray-600 text-center py-12">No rooms found.</div>
       ) : (
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredRooms.map((room) => (
-            <div
-              key={`room-${room.roomId}`}
-              className="bg-white rounded-xl shadow hover:shadow-lg transition-all overflow-hidden flex flex-col"
-            >
-              <img
-                src={
-                  room.images[0]
-                    ? `${process.env.NEXT_PUBLIC_API_URL}/rooms/images/${room.images[0].filename}`
-                    : '/images/rooms/default.jpg'
-                }
-                alt={`Room ${room.roomNumber}`}
-                className="w-full h-56 object-cover transition-transform duration-300 hover:scale-105"
-              />
+          {filteredRooms.map((room) => {
+            const status = availabilityMap[room.availabilityStatus] || {
+              label: 'Unknown',
+              color: 'text-gray-500',
+            };
 
-              <div className="p-5 flex flex-col flex-grow">
-                <h2 className="text-lg font-semibold text-gray-800 mb-1">
-                  Room {room.roomNumber} – {room.roomType.name}
-                </h2>
-                <p className={`text-sm font-medium mb-2 ${room.availabilityStatus === 'AVAILABLE' ? 'text-green-600' : 'text-red-500'}`}>
-                  {room.availabilityStatus === 'AVAILABLE' ? 'Available' : 'Unavailable'}
-                </p>
+            return (
+              <div
+                key={`room-${room.roomId}`}
+                className="bg-white rounded-xl shadow hover:shadow-lg transition-all overflow-hidden flex flex-col"
+              >
+                <img
+                  src={
+                    room.images[0]
+                      ? `${process.env.NEXT_PUBLIC_API_URL}/rooms/images/${room.images[0].filename}`
+                      : '/images/rooms/default.jpg'
+                  }
+                  alt={`Room ${room.roomNumber}`}
+                  className="w-full h-56 object-cover transition-transform duration-300 hover:scale-105"
+                />
 
-                <p className="text-gray-700 text-md font-medium mb-1">
-                  S/ {room.pricePerNight.toFixed(2)} <span className="text-sm font-normal">per night</span>
-                </p>
+                <div className="p-5 flex flex-col flex-grow">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-1">
+                    Room {room.roomNumber} – {room.roomType.name}
+                  </h2>
 
-                <p className="text-sm text-gray-500 mb-2">
-                  Capacity: {room.capacity} guests | Size: {room.roomSize} m²
-                </p>
+                  {/* ✅ Estado de disponibilidad con mapeo */}
+                  <p className={`text-sm font-medium mb-2 ${status.color}`}>
+                    {status.label}
+                  </p>
 
-                <p className="text-sm text-gray-600 mb-4 flex-grow">{room.description}</p>
+                  <p className="text-gray-700 text-md font-medium mb-1">
+                    S/ {room.pricePerNight.toFixed(2)}{' '}
+                    <span className="text-sm font-normal">per night</span>
+                  </p>
 
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {room.tags.map((tag) => (
-                    <span
-                      key={`tag-${room.roomId}-${tag.id}`}
-                      className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full inline-flex items-center gap-1"
-                    >
-                      <Tags className="w-3 h-3" />
-                      {tag.name}
-                    </span>
-                  ))}
+                  <p className="text-sm text-gray-500 mb-2">
+                    Capacity: {room.capacity} guests | Size: {room.roomSize} m²
+                  </p>
+
+                  <p className="text-sm text-gray-600 mb-4 flex-grow">
+                    {room.description}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {room.tags.map((tag) => (
+                      <span
+                        key={`tag-${room.roomId}-${tag.id}`}
+                        className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full inline-flex items-center gap-1"
+                      >
+                        <Tags className="w-3 h-3" />
+                        {tag.name}
+                      </span>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => router.push(`/rooms/${room.roomId}`)}
+                    className="mt-auto w-full bg-green-600 text-white text-sm font-medium py-2 rounded-md hover:bg-green-700 transition"
+                  >
+                    Book Now
+                  </button>
                 </div>
-
-                <button
-                  onClick={() => router.push(`/rooms/${room.roomId}`)}
-                  className="mt-auto w-full bg-green-600 text-white text-sm font-medium py-2 rounded-md hover:bg-green-700 transition"
-                >
-                  Book Now
-                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

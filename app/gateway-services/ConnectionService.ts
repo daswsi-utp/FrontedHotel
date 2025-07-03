@@ -1,3 +1,4 @@
+/*
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
 
@@ -13,3 +14,4 @@ axiosRetry(api, {
 });
 
 export default api;
+*/
