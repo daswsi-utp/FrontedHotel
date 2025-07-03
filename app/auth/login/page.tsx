@@ -9,7 +9,7 @@ import axios from 'axios';
 export default function LoginPage() {
   const [formData, setFormData] = useState({ username: '', password: '' });
   const router = useRouter();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL!; // e.g. http://localhost:8090/api
+  const API_URL = process.env.NEXT_PUBLIC_API_URL!; 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -49,8 +49,8 @@ export default function LoginPage() {
       // (Opcional) almacenar user en contexto o state global
 
       // 4️⃣ Redirección según rol
-      if (roles.includes('ROLE_ADMIN')) {
-        router.push('/admin/dashboard');
+      if (roles.includes('ROLE_ADMIN') && roles.includes('ROLE_USER')) {
+        router.push('/dashboard');
       } else if (roles.includes('ROLE_USER')) {
         router.push('http://localhost:3000/');
       } else {
