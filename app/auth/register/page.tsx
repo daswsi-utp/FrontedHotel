@@ -6,9 +6,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, User, Phone } from 'lucide-react';
 import Link from 'next/link';
-import axios from 'axios';
+import api from '../../gateway-services/ConnectionService';
+import { AxiosError} from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!; 
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -35,8 +35,8 @@ export default function RegisterPage() {
     const username = e.target.value.trim();
     if (!username) return;
     try {
-      const { data } = await axios.get<{ available: boolean }>(
-        `${API_URL}/users/check-username`,
+      const { data } = await api.get<{ available: boolean }>(
+        `/api/users/check-username`,
         { params: { username } }
       );
       if (!data.available) {
@@ -61,18 +61,19 @@ export default function RegisterPage() {
     }
 
     try {
-      await axios.post(
-        `${API_URL}/users`,
+      await api.post(
+        `/api/users`,
         { ...formData },
         { headers: { 'Content-Type': 'application/json' } }
       );
 
       // Después de registrar, redirige al login:
       router.push('/auth/login');
-    } catch (error: any) {
+    } catch (error) {
+      const axiosError = error as AxiosError;
       const message =
-        error?.response?.data?.message ?? 'Registration failed. Please try again.';
-      alert(message);
+        axiosError?.response?.data?.message ?? 'Registration failed. Please try again.';
+      alert(axiosError);
     }
   };
 

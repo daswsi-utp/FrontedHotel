@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import axios from 'axios';
+import api from "../../gateway-services/ConnectionService";
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -52,8 +52,8 @@ export default function PaymentModal({ isOpen, onClose, bookingData, totalPrice,
 
     setLoading(true);
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/bookings/save`, bookingData);
-      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/rooms/${bookingData.roomId}/status?status=BOOKED`);
+      await api.post(`/api/bookings/save`, bookingData);
+      await api.put(`/api/rooms/rooms/${bookingData.roomId}/status?status=BOOKED`);
       onSuccess();
       onClose();
     } catch {

@@ -53,7 +53,7 @@ export default function RoomsPage() {
     const hasToken = document.cookie.split('; ').some(c => c.startsWith('access_token='));
     setIsLoggedIn(hasToken);
 
-    axios
+    api
       .get<Room[]>(`/api/rooms/rooms`)
       .then((res) => {
         setRooms(res.data);

@@ -2,10 +2,10 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import api from "../../gateway-services/ConnectionService";
+import { AxiosError } from 'axios';
 
 interface RoomType { id: number; name: string; }
 interface Tag { id: number; name: string; }
-interface ImageFile extends File {}
 interface Room {
   roomId: number;
   roomNumber: number;
@@ -34,7 +34,7 @@ export default function CreateRoomModal({
     roomSize: "",
     description: "",
   });
-  const [imageFiles, setImageFiles] = useState<ImageFile[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [roomTypeSelected, setRoomTypeSelected] = useState<RoomType | null>(null);
@@ -59,6 +59,7 @@ export default function CreateRoomModal({
     });
   }, []);
 
+  useEffect(() => {
     if (room) {
       // Precarga datos en modo edición
       setFormData({
@@ -73,12 +74,12 @@ export default function CreateRoomModal({
       setMainImageIndex(room.images.findIndex(img => img.isMain));
     }
   }, [room]);
-
+    
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []) as ImageFile[];
+    const files = Array.from(e.target.files || []) as File[];
     setImageFiles(files);
     setMainImageIndex(null);
   };
@@ -125,7 +126,7 @@ export default function CreateRoomModal({
         alert('Habitación actualizada');
       } else {
         // POST con /api/rooms
-        await axios.post(
+        await api.post(
           `/api/rooms/rooms`,
           data,
           {
@@ -139,7 +140,7 @@ export default function CreateRoomModal({
       }
       onClose();
       window.location.reload();
-    } catch (err: any) {
+    } catch (err: AxiosError) {
       console.error('Error al guardar habitación:', err);
       alert('Error al guardar habitación');
     }

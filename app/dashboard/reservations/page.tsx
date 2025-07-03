@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Eye, Pencil } from 'lucide-react';
 import Link from 'next/link';
+import api from "../../gateway-services/ConnectionService";
 
 interface Reservation {
   id: number;
@@ -31,9 +32,7 @@ export default function ReservationsPage() {
   useEffect(() => {
     async function fetchReservations() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/detail`);
-        if (!res.ok) throw new Error('Error fetching reservations');
-        const data = await res.json();
+        const { data } = await api.get<Reservation[]>(`/api/bookings/detail`);
         setReservations(data);
       } catch (error) {
         console.error('Failed to fetch:', error);

@@ -96,8 +96,8 @@ export default function RoomDetailPage() {
     const username = payload.sub;
 
     // 2️⃣ Llamar a /api/users/username/{username} -> NO doblar /api
-    const userResp = await axios.get<{ id: number }>(
-      `${process.env.NEXT_PUBLIC_API_URL}/users/username/${encodeURIComponent(username)}`,
+    const userResp = await api.get<{ id: number }>(
+      `/api/users/username/${encodeURIComponent(username)}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     const userId = userResp.data.id;

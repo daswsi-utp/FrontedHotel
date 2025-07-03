@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Mail, Lock } from 'lucide-react';
 import Link from 'next/link';
 import api from '@/lib/api';
+//import api from '../../gateway-services/ConnectionService';
+import { AxiosError} from 'axios';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -28,7 +30,7 @@ export default function LoginPage() {
 
     try {
       // 1️⃣ Login (OAuth)
-      const loginResp = await api.post('/oauth/login', {
+      const loginResp = await api.post('/api/oauth/login', {
         username,
         password,
       });
@@ -55,9 +57,10 @@ export default function LoginPage() {
       } else {
         alert('Rol no reconocido. Contacta al administrador.');
       }
-    } catch (err: any) {
-      console.error(err);
-      alert(err.response?.data?.error || 'Error en login. Intenta de nuevo.');
+    } catch (err) {
+      const axiosError = err as AxiosError;
+      console.error(axiosError);
+      alert(axiosError.response?.data?.error || 'Error en login. Intenta de nuevo.');
     }
   };
 
