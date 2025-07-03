@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { BedDouble, Tags } from 'lucide-react';
+import { BedDouble, Tags, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface RoomType {
@@ -45,9 +45,14 @@ export default function RoomsPage() {
   const [error, setError] = useState('');
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [selectedType, setSelectedType] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    // Check login status by cookie
+    const hasToken = document.cookie.split('; ').some(c => c.startsWith('access_token='));
+    setIsLoggedIn(hasToken);
+
     axios
       .get<Room[]>(`${process.env.NEXT_PUBLIC_API_URL}/rooms`)
       .then((res) => {
@@ -73,6 +78,16 @@ export default function RoomsPage() {
     ? rooms.filter((room) => room.roomType.name === selectedType)
     : rooms;
 
+  const handleLogout = () => {
+    // Remove access token cookie by setting expiration in the past
+    document.cookie = `access_token=; Path=/; Expires=${new Date(0).toUTCString()}; SameSite=Strict`;
+    // For localhost (no HTTPS), don't include Secure flag when deleting
+    setIsLoggedIn(false);
+    // Optional: verify deletion in console
+    console.log('Cookie after deletion:', document.cookie);
+    router.push('/oauth/login');
+  };
+
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -80,6 +95,16 @@ export default function RoomsPage() {
           <BedDouble className="w-7 h-7 text-green-600" />
           Available Rooms
         </h1>
+        {/* Conditionally show Sign Out only if logged in */}
+        {isLoggedIn && (
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1 text-red-600 hover:text-red-800 text-sm font-medium"
+          >
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </button>
+        )}
 
         <select
           className="border border-gray-300 px-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
