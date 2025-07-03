@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import SockJS from "sockjs-client";
+import { Client, IMessage } from "@stomp/stompjs";
 
 interface Message {
   id: number;
@@ -17,11 +19,39 @@ export default function GuestMessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [filter, setFilter] = useState<"all" | "read" | "unread">("all");
+  const stompClientRef = useRef<Client | null>(null);
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/messages")
+    axios
+      .get("http://localhost:54518/api/messages")
       .then((res) => setMessages(res.data))
       .catch((err) => console.error("Error loading messages", err));
+  }, []);
+
+  useEffect(() => {
+    const socket = new SockJS("http://localhost:54518/ws-message");
+    const client = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000,
+      debug: (str) => console.log(str),
+      onConnect: () => {
+        client.subscribe("/topic/messages", (msg: IMessage) => {
+          const newMessage: Message = JSON.parse(msg.body);
+          setMessages((prev) => [newMessage, ...prev]);
+        });
+      },
+      onStompError: (frame) => {
+        console.error("STOMP error: ", frame.headers["message"]);
+        console.error("Details: ", frame.body);
+      },
+    });
+
+    client.activate();
+    stompClientRef.current = client;
+
+    return () => {
+      client.deactivate();
+    };
   }, []);
 
   const filteredMessages = messages.filter((msg) => {
@@ -34,12 +64,11 @@ export default function GuestMessagesPage() {
     setSelectedMessage(msg);
 
     if (!msg.read) {
-      axios.put(`http://localhost:8080/api/messages/${msg.id}/read`)
+      axios
+        .put(`http://localhost:53431/api/messages/${msg.id}/read`)
         .then(() => {
           setMessages((prev) =>
-            prev.map((m) =>
-              m.id === msg.id ? { ...m, read: true } : m
-            )
+            prev.map((m) => (m.id === msg.id ? { ...m, read: true } : m))
           );
         })
         .catch((err) => console.error("Error marking as read", err));
@@ -74,7 +103,6 @@ export default function GuestMessagesPage() {
       </div>
 
       <div className="flex border rounded-lg overflow-hidden shadow-md" style={{ minHeight: "400px" }}>
-        {/* Lista de mensajes */}
         <div className="w-1/3 border-r p-4 space-y-4 bg-white">
           {filteredMessages.map((msg) => (
             <div
@@ -98,7 +126,6 @@ export default function GuestMessagesPage() {
           ))}
         </div>
 
-        {/* Detalles del mensaje */}
         <div className="w-2/3 p-6 bg-gray-50">
           {selectedMessage ? (
             <div>
