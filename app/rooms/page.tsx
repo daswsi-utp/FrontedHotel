@@ -33,7 +33,6 @@ interface Room {
   tags: Tag[];
 }
 
-// ✅ Mapeo de estados de disponibilidad a texto y color
 const availabilityMap: Record<string, { label: string; color: string }> = {
   AVAILABLE: { label: 'Available', color: 'text-green-600' },
   BOOKED: { label: 'Booked', color: 'text-red-500' },
@@ -130,7 +129,6 @@ export default function RoomsPage() {
                     Room {room.roomNumber} – {room.roomType.name}
                   </h2>
 
-                  {/* ✅ Estado de disponibilidad con mapeo */}
                   <p className={`text-sm font-medium mb-2 ${status.color}`}>
                     {status.label}
                   </p>
