@@ -1,4 +1,4 @@
-// app/register/page.tsx (or pages/register.tsx if you’re using the pages/ directory)
+// app/register/page.tsx
 
 'use client';
 
@@ -8,7 +8,7 @@ import { Mail, Lock, User, Phone } from 'lucide-react';
 import Link from 'next/link';
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+const API_URL = process.env.NEXT_PUBLIC_API_URL!; 
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -49,7 +49,7 @@ export default function RegisterPage() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { name, secondName, lastName, username, email, cellPhone, password } = formData;
+    const { name, lastName, username, email, cellPhone, password } = formData;
 
     if (!name || !lastName || !username || !email || !cellPhone || !password) {
       alert('Please complete all required fields.');
@@ -61,18 +61,17 @@ export default function RegisterPage() {
     }
 
     try {
-      await axios.post(`${API_URL}/users`, {
-        name,
-        secondName,
-        lastName,
-        username,
-        email,
-        cellPhone,
-        password,
-      });
+      await axios.post(
+        `${API_URL}/users`,
+        { ...formData },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      // Después de registrar, redirige al login:
       router.push('/auth/login');
     } catch (error: any) {
-      const message = error?.response?.data?.message ?? 'Registration failed. Please try again.';
+      const message =
+        error?.response?.data?.message ?? 'Registration failed. Please try again.';
       alert(message);
     }
   };
@@ -83,7 +82,7 @@ export default function RegisterPage() {
         <h2 className="text-3xl font-bold text-center mb-6">Create Account</h2>
         <form onSubmit={handleRegister} className="space-y-5">
           
-          {/* Name */}
+          {/* First Name */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               First Name
@@ -196,8 +195,8 @@ export default function RegisterPage() {
                 title="Only digits 1–9 are allowed."
                 value={formData.cellPhone}
                 onChange={handleChange}
-                onInvalid={(e) => e.currentTarget.setCustomValidity('Please enter only digits 1–9.')}
-                onInput={(e) => e.currentTarget.setCustomValidity('')}
+                onInvalid={e => e.currentTarget.setCustomValidity('Please enter only digits 1–9.')}
+                onInput={e => e.currentTarget.setCustomValidity('')}
                 required
               />
             </div>
@@ -222,7 +221,8 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <button
+          {/* Register Button */}
+          <button 
             type="submit"
             disabled={!!usernameError}
             className={`w-full py-2 px-4 rounded-xl transition ${
@@ -237,11 +237,11 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-gray-500 mt-4">
           Already have an account?{' '}
-          <Link href="/auth/login" className="underline cursor-pointer">
+          <Link href="/auth/login" className="underline">
             Sign in
           </Link>
         </p>
       </div>
     </main>
-  );
+);
 }
