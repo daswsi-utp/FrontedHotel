@@ -17,7 +17,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
 
   const handleLogout = () => {
-    // Limpieza de token…
     localStorage.removeItem('access_token');
     document.cookie = [
       'access_token=;',

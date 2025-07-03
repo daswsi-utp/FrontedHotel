@@ -26,7 +26,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // 1) /rooms/** → requiere estar logueado
+
   if (pathname.startsWith('/rooms/')) {
     const token = req.cookies.get('access_token')?.value
     if (!token) {
@@ -35,7 +35,6 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // 2) /dashboard/** → solo ADMIN
   if (pathname.startsWith('/dashboard')) {
     const token = req.cookies.get('access_token')?.value
     if (!token) {
@@ -48,7 +47,6 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // 3) Resto de rutas privadas → al menos ROLE_USER
   {
     const token = req.cookies.get('access_token')?.value
     if (!token) {
