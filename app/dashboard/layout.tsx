@@ -11,6 +11,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <aside className="w-64 bg-slate-800 text-white p-6 space-y-6">
         <h2 className="text-2xl font-bold mb-8">Hotel Admin MUNAY WASI</h2>
         <nav className="flex flex-col space-y-4">
+          
           <NavLink href="/dashboard" icon={<LayoutDashboard size={20} />}>
             Estadísticas
           </NavLink>

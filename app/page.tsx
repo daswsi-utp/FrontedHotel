@@ -17,7 +17,7 @@ export default function HomePage() {
         />
         <div className="z-10 text-center text-white px-4">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg">
-            WELCOME MUNAY WASI 
+            WELCOME MUNAY WASI
           </h1>
           <p className="text-lg md:text-xl mb-8">
             Vive la mejor experiencia en cada estadía.
@@ -63,56 +63,65 @@ export default function HomePage() {
         </div>
       </section>
 
-     {/* Departamentos disponibles en Perú */}
-<section className="py-16 px-4 md:px-20 bg-white">
-  <h2 className="text-3xl font-bold mb-10 text-center">Departamentos Disponibles en Perú</h2>
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-    {[
-      {
-        id: 1,
-        title: "Departamento en Miraflores",
-        location: "Lima",
-        price: "S/ 280 por noche",
-        img: "/peru-1.jpg",
-      },
-      {
-        id: 2,
-        title: "Suite con vista al volcán",
-        location: "Arequipa",
-        price: "S/ 220 por noche",
-        img: "/peru-2.jpg",
-      },
-      {
-        id: 3,
-        title: "Hospedaje ecológico",
-        location: "Cusco",
-        price: "S/ 190 por noche",
-        img: "/peru-3.jpg",
-      },
-    ].map((dpto) => (
-      <div
-        key={dpto.id}
-        className="bg-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transition"
-      >
-        <Image
-          src={dpto.img}
-          alt={dpto.title}
-          width={400}
-          height={250}
-          className="w-full h-56 object-cover"
-        />
-        <div className="p-4">
-          <h3 className="text-xl font-semibold">{dpto.title}</h3>
-          <p className="text-sm text-gray-600">{dpto.location}</p>
-          <p className="text-md font-medium text-black mt-2">{dpto.price}</p>
-          <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-            Reservar
-          </button>
+      {/* Departamentos disponibles en Perú */}
+      <section className="py-16 px-4 md:px-20 bg-white">
+        <h2 className="text-3xl font-bold mb-10 text-center">Departamentos Disponibles en Perú</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            {
+              id: 1,
+              title: "Departamento en Miraflores",
+              location: "Lima",
+              price: "S/ 280 por noche",
+              img: "/peru-1.jpg",
+            },
+            {
+              id: 2,
+              title: "Suite con vista al volcán",
+              location: "Arequipa",
+              price: "S/ 220 por noche",
+              img: "/peru-2.jpg",
+            },
+            {
+              id: 3,
+              title: "Hospedaje ecológico",
+              location: "Cusco",
+              price: "S/ 190 por noche",
+              img: "/peru-3.jpg",
+            },
+          ].map((dpto) => (
+            <div
+              key={dpto.id}
+              className="bg-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transition"
+            >
+              <Image
+                src={dpto.img}
+                alt={dpto.title}
+                width={400}
+                height={250}
+                className="w-full h-56 object-cover"
+              />
+              <div className="p-4">
+                <h3 className="text-xl font-semibold">{dpto.title}</h3>
+                <p className="text-sm text-gray-600">{dpto.location}</p>
+                <p className="text-md font-medium text-black mt-2">{dpto.price}</p>
+                <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                  Reservar
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-    ))}
-  </div>
-</section>
+        <div className="text-center mt-12">
+          <Link
+            href="/chat"
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+          >
+            Ir al Chat
+          </Link>
+        </div>
+
+      </section>
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white text-center py-6">
