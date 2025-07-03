@@ -13,10 +13,7 @@ interface User {
   status: 'Active' | 'Inactive';
 }
 
-/**
- * Estructura exacta que devuelve tu backend.
- * (Si cambia, actualízala aquí para tener tipado estricto).
- */
+
 interface RawStat {
   id: number;
   userName: string;
@@ -43,13 +40,11 @@ export default function UsersPage() {
         setLoading(true);
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/bookings/stats`,
-          { signal: controller.signal, cache: 'no-store' } // cache 'no-store' evita datos stale
+          { signal: controller.signal, cache: 'no-store' } 
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data: RawStat[] = await res.json();
-
-        // 1️⃣ Adaptamos los campos de la API al shape que necesita el componente
         const mapped: User[] = data.map((s) => ({
           id: s.id,
           name: `${s.userName} ${s.userLastName}`,
@@ -80,27 +75,21 @@ export default function UsersPage() {
     }
 
     load();
-    return () => controller.abort(); // limpia si el componente se desmonta
+    return () => controller.abort(); 
   }, []);
 
-  // 2️⃣ Filtro local
   const filtered =
     filter === 'All' ? users : users.filter((u) => u.status === filter);
-
-  /* ----------------------- UI ----------------------- */
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">Registered Users</h1>
 
-      {/* Estado de carga o error */}
       {loading && <p className="mb-4">Cargando…</p>}
       {error && (
         <p className="mb-4 text-red-600">
           {error} (revisa consola y CORS en el backend)
         </p>
       )}
-
-      {/* Filtros y búsqueda */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
         <input
           type="text"
@@ -125,7 +114,6 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* Tabla */}
       <div className="overflow-auto rounded-lg border">
         <table className="min-w-full divide-y divide-gray-200 text-sm">
           <thead className="bg-gray-100 text-left font-semibold">

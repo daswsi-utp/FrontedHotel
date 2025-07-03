@@ -22,7 +22,7 @@ export default function HomePage() {
           </p>
           <div className="flex justify-center gap-4">
             <Link
-              href="/login"
+              href="/auth/login"
               className="bg-white text-black font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-gray-200 transition"
             >
               Iniciar Sesión
