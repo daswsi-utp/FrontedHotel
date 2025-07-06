@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import api from "../../gateway-services/ConnectionService";
 import PaymentModal from "./PaymentModal";
 
-import api from "../../gateway-services/ConnectionService";
 interface Room {
   roomId: number;
   roomNumber: number;

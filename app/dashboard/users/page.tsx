@@ -61,20 +61,12 @@ export default function UsersPage() {
 
         setUsers(mapped);
       } catch (err) {
-<<<<<<< HEAD
-        if(err instanceof Error){
-          if (err.name !== 'AbortError') {
-                    console.error(err);
-                    setError(err.message ?? 'Error al cargar datos');
-=======
         if (err instanceof Error) {
           if (err.name !== "AbortError") {
             console.error(err);
             setError(err.message ?? "Error al cargar datos");
->>>>>>> 32490c7 (Fixed conflict)
           }
         }
-        
       } finally {
         setLoading(false);
       }
