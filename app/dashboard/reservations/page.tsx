@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Eye, Pencil } from "lucide-react";
-import Link from "next/link";
 import api from "../../gateway-services/ConnectionService";
 
 interface Reservation {

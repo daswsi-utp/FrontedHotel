@@ -175,17 +175,17 @@ export default function PromotionsPage() {
   const openEditModal = (promo: service.Promotion) => {
     setPromToBeEdited(promo);
     setEditPromotion({
-      name: promo.name,
-      description: promo.description,
-      discountValue: promo.discountValue,
-      startDate: promo.startDate,
-      endDate: promo.endDate,
-      type: promo.type,
-      isActive: promo.isActive,
-      minStay: promo.minStay,
-      roomApplicability: promo.roomApplicability,
-      roomsIds: promo.rooms?.map((rt) => rt.roomTypeId) ?? [],
-    });
+    name: promo.name,
+    description: promo.description,
+    discountValue: promo.discountValue,
+    startDate: promo.startDate,
+    endDate: promo.endDate,
+    type: promo.type,
+    isActive: promo.isActive,
+    minStay: promo.minStay,
+    roomApplicability: promo.roomApplicability,
+    roomsIds: promo.rooms?.map(rt => rt.roomTypeId) ?? [],
+  });
     setShowEditPromotion(true);
   };
 

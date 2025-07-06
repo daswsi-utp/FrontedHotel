@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { Mail, Lock, User, Phone } from "lucide-react";
 import Link from "next/link";
 import api from "../../gateway-services/ConnectionService";
-import { AxiosError } from "axios";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
