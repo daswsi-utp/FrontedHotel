@@ -114,6 +114,7 @@ export default function GuestMessagesPage() {
         className="flex border rounded-lg overflow-hidden shadow-md"
         style={{ minHeight: "400px" }}
       >
+        {/* Lista de mensajes */}
         <div className="w-1/3 border-r p-4 space-y-4 bg-white">
           {filteredMessages.map((msg) => (
             <div

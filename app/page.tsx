@@ -39,44 +39,46 @@ export default function HomePage() {
 
       {/* Carrusel de información */}
       <section className="py-20 px-4 md:px-20 bg-white">
-        <h2 className="text-3xl font-bold mb-10 text-center">¿Por qué elegir Munay Wasi?</h2>
+        <h2 className="text-3xl font-bold mb-10 text-center">
+          ¿Por qué elegir Munay Wasi?
+        </h2>
         <div className="flex overflow-x-auto space-x-6 snap-x snap-mandatory scrollbar-hide">
           {[
             {
-    title: "Personalized Service",
-    desc: "Our team is available 24/7 to ensure an unforgettable experience.",
-    icon: "💁‍♀️",
-  },
-  {
-    title: "Prime Location",
-    desc: "Strategically located near cultural and tourist attractions.",
-    icon: "📍",
-  },
-  {
-    title: "Cozy Atmosphere",
-    desc: "Spaces designed for your comfort with a Peruvian touch.",
-    icon: "🏡",
-  },
-  {
-    title: "Local Cuisine",
-    desc: "Enjoy traditional Peruvian dishes made with fresh ingredients.",
-    icon: "🍽️",
-  },
-  {
-    title: "Tours & Activities",
-    desc: "We organize unique experiences like city tours, hikes, and more.",
-    icon: "🎒",
-  },
-  {
-    title: "Wi-Fi & Comfort",
-    desc: "High-speed internet, cozy beds, and relaxing common areas.",
-    icon: "📶",
-  },
-  {
-    title: "Guaranteed Safety",
-    desc: "Security protocols and monitoring ensure peace of mind.",
-    icon: "🛡️",
-  },
+              title: "Personalized Service",
+              desc: "Our team is available 24/7 to ensure an unforgettable experience.",
+              icon: "💁‍♀️",
+            },
+            {
+              title: "Prime Location",
+              desc: "Strategically located near cultural and tourist attractions.",
+              icon: "📍",
+            },
+            {
+              title: "Cozy Atmosphere",
+              desc: "Spaces designed for your comfort with a Peruvian touch.",
+              icon: "🏡",
+            },
+            {
+              title: "Local Cuisine",
+              desc: "Enjoy traditional Peruvian dishes made with fresh ingredients.",
+              icon: "🍽️",
+            },
+            {
+              title: "Tours & Activities",
+              desc: "We organize unique experiences like city tours, hikes, and more.",
+              icon: "🎒",
+            },
+            {
+              title: "Wi-Fi & Comfort",
+              desc: "High-speed internet, cozy beds, and relaxing common areas.",
+              icon: "📶",
+            },
+            {
+              title: "Guaranteed Safety",
+              desc: "Security protocols and monitoring ensure peace of mind.",
+              icon: "🛡️",
+            },
           ].map((item, i) => (
             <div
               key={i}
@@ -90,54 +92,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Departamentos disponibles en Perú */}
-      <section className="py-16 px-4 md:px-20 bg-white">
-        <h2 className="text-3xl font-bold mb-10 text-center">Departamentos Disponibles en Perú</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              id: 1,
-              title: "Departamento en Miraflores",
-              location: "Lima",
-              price: "S/ 280 por noche",
-              img: "/peru-1.jpg",
-            },
-            {
-              id: 2,
-              title: "Suite con vista al volcán",
-              location: "Arequipa",
-              price: "S/ 220 por noche",
-              img: "/peru-2.jpg",
-            },
-            {
-              id: 3,
-              title: "Hospedaje ecológico",
-              location: "Cusco",
-              price: "S/ 190 por noche",
-              img: "/peru-3.jpg",
-            },
-          ].map((dpto) => (
-            <div
-              key={dpto.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transition"
-            >
-              <Image
-                src={dpto.img}
-                alt={dpto.title}
-                width={400}
-                height={250}
-                className="w-full h-56 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-xl font-semibold">{dpto.title}</h3>
-                <p className="text-sm text-gray-600">{dpto.location}</p>
-                <p className="text-md font-medium text-black mt-2">{dpto.price}</p>
-                <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                  Reservar
-                </button>
-              </div>
-            </div>
-          ))}
+      {/* Sección Sobre Nosotros */}
+      <section className="py-16 px-4 md:px-20 bg-gray-100">
+        <h2 className="text-3xl font-bold mb-10 text-center">Sobre Nosotros</h2>
+        <div className="grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <Image
+              src="/about-hotel.jpg"
+              alt="Sobre Munay Wasi"
+              width={500}
+              height={300}
+              className="rounded-xl object-cover w-full"
+            />
+          </div>
+          <div>
+            <p className="text-gray-700 text-lg leading-relaxed">
+              Munay Wasi nace con la visión de brindar experiencias auténticas
+              en cada rincón del Perú. Nuestro compromiso es ofrecerte una
+              estadía cómoda, segura y culturalmente enriquecedora, combinando
+              tradición con modernidad.
+            </p>
+            <p className="text-gray-600 mt-4">
+              Ya sea por trabajo o vacaciones, tenemos el espacio perfecto para
+              ti. Descubre el encanto de nuestros destinos y siéntete como en
+              casa.
+            </p>
+            <Link href="/about">
+              <button className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                Conoce más
+              </button>
+            </Link>
+          </div>
         </div>
         <div className="text-center mt-12">
           <Link
@@ -147,7 +132,6 @@ export default function HomePage() {
             Ir al Chat
           </Link>
         </div>
-
       </section>
 
       {/* Footer mejorado */}
@@ -155,9 +139,12 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Hotel Info */}
           <div>
-            <h3 className="text-yellow-400 font-bold text-xl mb-4">✦ Munay Wasi</h3>
+            <h3 className="text-yellow-400 font-bold text-xl mb-4">
+              ✦ Munay Wasi
+            </h3>
             <p className="text-sm text-gray-300">
-              Experience luxury and comfort in our exquisite hotel, offering stunning views and unparalleled service for an unforgettable stay.
+              Experience luxury and comfort in our exquisite hotel, offering
+              stunning views and unparalleled service for an unforgettable stay.
             </p>
           </div>
 
@@ -165,11 +152,31 @@ export default function HomePage() {
           <div>
             <h4 className="text-yellow-400 font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/" className="hover:underline">Home</Link></li>
-              <li><Link href="/dashboard/rooms" className="hover:underline">Our Rooms</Link></li>
-              <li><Link href="/login" className="hover:underline">Book Now</Link></li>
-              <li><Link href="/about" className="hover:underline">About Us</Link></li>
-              <li><Link href="/contact" className="hover:underline">Contact</Link></li>
+              <li>
+                <Link href="/" className="hover:underline">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard/rooms" className="hover:underline">
+                  Our Rooms
+                </Link>
+              </li>
+              <li>
+                <Link href="/login" className="hover:underline">
+                  Book Now
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:underline">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:underline">
+                  Contact
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -186,14 +193,20 @@ export default function HomePage() {
           {/* Newsletter */}
           <div>
             <h4 className="text-yellow-400 font-semibold mb-4">Newsletter</h4>
-            <p className="text-sm text-gray-300 mb-4">Subscribe to our newsletter for special deals, exclusive offers, and updates.</p>
+            <p className="text-sm text-gray-300 mb-4">
+              Subscribe to our newsletter for special deals, exclusive offers,
+              and updates.
+            </p>
             <form className="flex">
               <input
                 type="email"
                 placeholder="Your email address"
                 className="w-full p-2 rounded-l-md text-black bg-white"
               />
-              <button type="submit" className="bg-yellow-400 text-black font-semibold px-4 rounded-r-md hover:bg-yellow-300 transition">
+              <button
+                type="submit"
+                className="bg-yellow-400 text-black font-semibold px-4 rounded-r-md hover:bg-yellow-300 transition"
+              >
                 Subscribe
               </button>
             </form>
@@ -204,9 +217,15 @@ export default function HomePage() {
         <div className="mt-12 text-center border-t border-gray-600 pt-6 text-sm text-gray-400">
           <p>&copy; 2025 Hotel Paraiso. All rights reserved.</p>
           <div className="flex justify-center gap-4 mt-4">
-            <a href="#" className="hover:text-white">🌐</a>
-            <a href="#" className="hover:text-white">🔗</a>
-            <a href="#" className="hover:text-white">📸</a>
+            <a href="#" className="hover:text-white">
+              🌐
+            </a>
+            <a href="#" className="hover:text-white">
+              🔗
+            </a>
+            <a href="#" className="hover:text-white">
+              📸
+            </a>
           </div>
         </div>
       </footer>
