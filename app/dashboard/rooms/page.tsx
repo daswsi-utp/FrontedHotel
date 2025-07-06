@@ -1,5 +1,7 @@
 "use client";
 
+//import api from "../../../gateway-services/ConnectionService";
+//import axios from "axios";
 import api from "../../gateway-services/ConnectionService";
 import { useEffect, useState } from "react";
 import { BedDouble, Plus, Pencil, Trash2, Eye, Tags } from "lucide-react";

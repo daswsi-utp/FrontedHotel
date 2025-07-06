@@ -2,7 +2,8 @@
 
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import api from "../../gateway-services/ConnectionService";
-import { AxiosError } from "axios";
+import axios from "axios";
+//import { AxiosError } from "axios";
 
 interface RoomType {
   id: number;

@@ -52,29 +52,25 @@ export default function EditRoomPage() {
 
   useEffect(() => {
     if (!id) return;
-    axios
-      .get<Room>(`${process.env.NEXT_PUBLIC_API_URL}/rooms/${id}`)
-      .then((res) => {
-        const r = res.data;
-        setRoom(r);
-        setForm({
-          roomNumber: String(r.roomNumber),
-          pricePerNight: String(r.pricePerNight),
-          capacity: String(r.capacity),
-          roomSize: String(r.roomSize),
-          description: r.description,
-        });
-        setSelectedTags(r.tags.map((t) => t.name));
-        const main = r.images.find((img) => img.isMain);
-        setMainImageId(main?.id ?? null);
+    api.get<Room>(`/api/rooms/rooms/${id}`).then((res) => {
+      const r = res.data;
+      setRoom(r);
+      setForm({
+        roomNumber: String(r.roomNumber),
+        pricePerNight: String(r.pricePerNight),
+        capacity: String(r.capacity),
+        roomSize: String(r.roomSize),
+        description: r.description,
       });
-
-    //    axios.get<RoomType[]>(`${process.env.NEXT_PUBLIC_API_URL}/roomtype`)
-    //     .then(res => setRoomTypes(res.data));
-
+      setSelectedTags(r.tags.map((t) => t.name));
+      const main = r.images.find((img) => img.isMain);
+      setMainImageId(main?.id ?? null);
+    });
     api
-      .get<Tag[]>(`${process.env.NEXT_PUBLIC_API_URL}/tags`)
-      .then((res) => setTags(res.data));
+      .get<RoomType[]>(`/api/rooms/roomtype`)
+      .then((res) => setRoomTypes(res.data));
+
+    api.get<Tag[]>(`/api/rooms/tags`).then((res) => setTags(res.data));
   }, [id]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

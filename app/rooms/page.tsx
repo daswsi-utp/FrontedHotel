@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { BedDouble, Tags, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { BedDouble, Tags, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 import api from "../gateway-services/ConnectionService";
 
 interface RoomType {
@@ -34,33 +34,34 @@ interface Room {
 }
 
 const availabilityMap: Record<string, { label: string; color: string }> = {
-  AVAILABLE: { label: 'Available', color: 'text-green-600' },
-  BOOKED: { label: 'Booked', color: 'text-red-500' },
-  MAINTENANCE: { label: 'Maintenance', color: 'text-yellow-500' },
+  AVAILABLE: { label: "Available", color: "text-green-600" },
+  BOOKED: { label: "Booked", color: "text-red-500" },
+  MAINTENANCE: { label: "Maintenance", color: "text-yellow-500" },
 };
 
 export default function RoomsPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
-  const [selectedType, setSelectedType] = useState('');
+  const [selectedType, setSelectedType] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     // Check login status by cookie
-    const hasToken = document.cookie.split('; ').some(c => c.startsWith('access_token='));
+    const hasToken = document.cookie
+      .split("; ")
+      .some((c) => c.startsWith("access_token="));
     setIsLoggedIn(hasToken);
-
     api
       .get<Room[]>(`/api/rooms/rooms`)
       .then((res) => {
         setRooms(res.data);
         setLoading(false);
       })
-      .catch((err) => {
-        setError('Failed to fetch rooms.');
+      .catch((err: unknown) => {
+        setError("Failed to fetch rooms.");
         console.error(err);
         setLoading(false);
       });
@@ -69,7 +70,7 @@ export default function RoomsPage() {
       .get<RoomType[]>(`/api/rooms/roomtype`)
       .then((res) => setRoomTypes(res.data))
       .catch((err) => {
-        console.error('Failed to fetch room types:', err);
+        console.error("Failed to fetch room types:", err);
         setRoomTypes([]);
       });
   }, []);
@@ -84,8 +85,8 @@ export default function RoomsPage() {
     // For localhost (no HTTPS), don't include Secure flag when deleting
     setIsLoggedIn(false);
     // Optional: verify deletion in console
-    console.log('Cookie after deletion:', document.cookie);
-    router.push('/oauth/login');
+    console.log("Cookie after deletion:", document.cookie);
+    router.push("/oauth/login");
   };
 
   return (
@@ -130,8 +131,8 @@ export default function RoomsPage() {
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {filteredRooms.map((room) => {
             const status = availabilityMap[room.availabilityStatus] || {
-              label: 'Unknown',
-              color: 'text-gray-500',
+              label: "Unknown",
+              color: "text-gray-500",
             };
 
             return (
@@ -143,7 +144,7 @@ export default function RoomsPage() {
                   src={
                     room.images[0]
                       ? `${process.env.NEXT_PUBLIC_API_URL}/rooms/images/${room.images[0].filename}`
-                      : '/images/rooms/default.jpg'
+                      : "/images/rooms/default.jpg"
                   }
                   alt={`Room ${room.roomNumber}`}
                   className="w-full h-56 object-cover transition-transform duration-300 hover:scale-105"
@@ -159,7 +160,7 @@ export default function RoomsPage() {
                   </p>
 
                   <p className="text-gray-700 text-md font-medium mb-1">
-                    S/ {room.pricePerNight.toFixed(2)}{' '}
+                    S/ {room.pricePerNight.toFixed(2)}{" "}
                     <span className="text-sm font-normal">per night</span>
                   </p>
 
