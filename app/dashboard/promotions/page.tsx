@@ -72,6 +72,7 @@ export default function PromotionsPage() {
       }
     };
     fetchRoomTypes();
+    console.log(roomTypes);
   }, []);
 
   const handleRoomTypeSelectionChange = (roomTypeId: number) => {

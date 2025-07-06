@@ -22,7 +22,8 @@ export default function GuestMessagesPage() {
   const stompClientRef = useRef<Client | null>(null);
 
   useEffect(() => {
-    api.get("/api/messages")
+    api
+      .get("/api/messages")
       .then((res) => setMessages(res.data))
       .catch((err) => console.error("Error loading messages", err));
   }, []);
@@ -71,10 +72,11 @@ export default function GuestMessagesPage() {
     setSelectedMessage(msg);
 
     if (!msg.read) {
-      api.put(`/api/messages/${msg.id}/read`)
+      api
+        .put(`/api/messages/${msg.id}/read`)
         .then(() => {
           setMessages((prev) =>
-            prev.map((m) => (m.id === msg.id ? { ...m, read: true } : m))
+            prev.map((m) => (m.id === msg.id ? { ...m, read: true } : m)),
           );
         })
         .catch((err) => console.error("Error marking as read", err));
@@ -136,7 +138,9 @@ export default function GuestMessagesPage() {
         <div className="w-2/3 p-6 bg-gray-50">
           {selectedMessage ? (
             <div>
-              <h2 className="text-xl font-bold mb-2">{selectedMessage.subject}</h2>
+              <h2 className="text-xl font-bold mb-2">
+                {selectedMessage.subject}
+              </h2>
               <p className="text-gray-600 mb-2">
                 From: {selectedMessage.name} (
                 {new Date(selectedMessage.sentDate).toLocaleString()})
