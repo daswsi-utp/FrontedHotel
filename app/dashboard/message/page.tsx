@@ -4,6 +4,7 @@ import api from "../../gateway-services/ConnectionService";
 import { useEffect, useState, useRef } from "react";
 import SockJS from "sockjs-client";
 import { Client, IMessage } from "@stomp/stompjs";
+import axios from "axios";
 
 interface Message {
   id: number;
@@ -24,12 +25,13 @@ export default function GuestMessagesPage() {
   useEffect(() => {
     api
       .get("/api/messages")
+      //.get("http://localhost:54518/api/messages")
       .then((res) => setMessages(res.data))
       .catch((err) => console.error("Error loading messages", err));
   }, []);
 
   useEffect(() => {
-    const socket = new SockJS("http://localhost:52432/ws-message");
+    const socket = new SockJS("http://localhost:54518/ws-message");
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
@@ -46,6 +48,7 @@ export default function GuestMessagesPage() {
             }
             return [newMessage, ...prev];
           });
+          //setMessages((prev) => [newMessage, ...prev]);
         });
       },
       onStompError: (frame) => {
@@ -73,6 +76,7 @@ export default function GuestMessagesPage() {
 
     if (!msg.read) {
       api
+        //.put(`http://localhost:53431/api/messages/${msg.id}/read`)
         .put(`/api/messages/${msg.id}/read`)
         .then(() => {
           setMessages((prev) =>
