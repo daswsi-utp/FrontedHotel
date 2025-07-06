@@ -1,12 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useParams, useRouter } from "next/navigation";
 import api from "../../../../gateway-services/ConnectionService";
 
-interface RoomType { id: number; name: string; }
-interface Tag { id: number; name: string; }
-interface Image { id: number; filename: string; isMain?: boolean }
+interface RoomType {
+  id: number;
+  name: string;
+}
+interface Tag {
+  id: number;
+  name: string;
+}
+interface Image {
+  id: number;
+  filename: string;
+  isMain?: boolean;
+}
 
 interface Room {
   roomId: number;
@@ -24,16 +34,15 @@ interface Room {
 export default function EditRoomPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const [room, setRoom] = useState<Room|null>(null);
+  const [room, setRoom] = useState<Room | null>(null);
   const [form, setForm] = useState({
-    roomNumber: '',
-    pricePerNight: '',
-    capacity: '',
-    roomSize: '',
-    description: '',
+    roomNumber: "",
+    pricePerNight: "",
+    capacity: "",
+    roomSize: "",
+    description: "",
   });
-
-  const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
+  //  const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [toRemove, setToRemove] = useState<Set<number>>(new Set());
@@ -43,8 +52,9 @@ export default function EditRoomPage() {
 
   useEffect(() => {
     if (!id) return;
-    api.get<Room>(`/api/rooms/rooms/${id}`)
-      .then(res => {
+    axios
+      .get<Room>(`${process.env.NEXT_PUBLIC_API_URL}/rooms/${id}`)
+      .then((res) => {
         const r = res.data;
         setRoom(r);
         setForm({
@@ -54,33 +64,39 @@ export default function EditRoomPage() {
           roomSize: String(r.roomSize),
           description: r.description,
         });
-        setSelectedTags(r.tags.map(t => t.name));
-        const main = r.images.find(img => img.isMain);
+        setSelectedTags(r.tags.map((t) => t.name));
+        const main = r.images.find((img) => img.isMain);
         setMainImageId(main?.id ?? null);
       });
 
-    api.get<RoomType[]>(`/api/rooms/roomtype`)
-      .then(res => setRoomTypes(res.data));
+    //    axios.get<RoomType[]>(`${process.env.NEXT_PUBLIC_API_URL}/roomtype`)
+    //     .then(res => setRoomTypes(res.data));
 
-    api.get<Tag[]>(`/api/rooms/tags`)
-      .then(res => setTags(res.data));
+    api
+      .get<Tag[]>(`${process.env.NEXT_PUBLIC_API_URL}/tags`)
+      .then((res) => setTags(res.data));
   }, [id]);
 
-  const onChange = (e: ChangeEvent<HTMLInputElement|HTMLTextAreaElement>) => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  const onChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
 
   const toggleTag = (name: string, checked: boolean) => {
-    setSelectedTags(ts => checked
-      ? [...ts, name]
-      : ts.filter(t => t !== name)
+    setSelectedTags((ts) =>
+      checked ? [...ts, name] : ts.filter((t) => t !== name),
     );
   };
 
   const toggleRemove = (imgId: number) => {
-    setToRemove(s => {
+    setToRemove((s) => {
       const copy = new Set(s);
-      copy.has(imgId) ? copy.delete(imgId) : copy.add(imgId);
+      if (copy.has(imgId)) {
+        copy.delete(imgId);
+      } else {
+        copy.add(imgId);
+      }
+      //copy.has(imgId) ? copy.delete(imgId) : copy.add(imgId);
+      //It was made into a normal if-else statement 'cause the nom run build would complain'
       return copy;
     });
   };
@@ -104,26 +120,29 @@ export default function EditRoomPage() {
     };
 
     const data = new FormData();
-    data.append('room', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+    data.append(
+      "room",
+      new Blob([JSON.stringify(payload)], { type: "application/json" }),
+    );
 
-    toRemove.forEach(id => data.append('removeImageIds', String(id)));
-    newImages.forEach(f => data.append('newImages', f));
-    selectedTags.forEach(t => data.append('tags', t));
+    toRemove.forEach((id) => data.append("removeImageIds", String(id)));
+    newImages.forEach((f) => data.append("newImages", f));
+    selectedTags.forEach((t) => data.append("tags", t));
 
     // Solo uno: imagen nueva o existente como principal
     if (mainImageIndex !== null) {
-      data.append('mainImageIndex', String(mainImageIndex));
+      data.append("mainImageIndex", String(mainImageIndex));
     } else if (mainImageId !== null) {
-      data.append('mainImageId', String(mainImageId));
+      data.append("mainImageId", String(mainImageId));
     }
 
     try {
       await api.put(`/api/rooms/rooms/${room.roomId}`, data);
-      alert('Habitación actualizada');
+      alert("Habitación actualizada");
       router.back();
     } catch (err) {
       console.error(err);
-      alert('Error al actualizar habitación');
+      alert("Error al actualizar habitación");
     }
   };
 
@@ -131,40 +150,73 @@ export default function EditRoomPage() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Editar Habitación {room.roomNumber}</h1>
+      <h1 className="text-2xl font-bold">
+        Editar Habitación {room.roomNumber}
+      </h1>
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input type="number" name="roomNumber" value={form.roomNumber}
-            onChange={onChange} required className="border p-2 rounded" placeholder="Número"
+          <input
+            type="number"
+            name="roomNumber"
+            value={form.roomNumber}
+            onChange={onChange}
+            required
+            className="border p-2 rounded"
+            placeholder="Número"
           />
-          <select value={room.roomType.id} disabled className="border p-2 rounded bg-gray-100">
+          <select
+            value={room.roomType.id}
+            disabled
+            className="border p-2 rounded bg-gray-100"
+          >
             <option>{room.roomType.name}</option>
           </select>
-          <input type="number" name="pricePerNight" value={form.pricePerNight}
-            onChange={onChange} required className="border p-2 rounded" placeholder="Precio"
+          <input
+            type="number"
+            name="pricePerNight"
+            value={form.pricePerNight}
+            onChange={onChange}
+            required
+            className="border p-2 rounded"
+            placeholder="Precio"
           />
-          <input type="number" name="capacity" value={form.capacity}
-            onChange={onChange} required className="border p-2 rounded" placeholder="Capacidad"
+          <input
+            type="number"
+            name="capacity"
+            value={form.capacity}
+            onChange={onChange}
+            required
+            className="border p-2 rounded"
+            placeholder="Capacidad"
           />
-          <input type="number" name="roomSize" value={form.roomSize}
-            onChange={onChange} className="border p-2 rounded" placeholder="Tamaño (m²)"
+          <input
+            type="number"
+            name="roomSize"
+            value={form.roomSize}
+            onChange={onChange}
+            className="border p-2 rounded"
+            placeholder="Tamaño (m²)"
           />
         </div>
 
-        <textarea name="description" value={form.description}
-          onChange={onChange} rows={3}
-          className="w-full border p-2 rounded" placeholder="Descripción"
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={onChange}
+          rows={3}
+          className="w-full border p-2 rounded"
+          placeholder="Descripción"
         />
 
         <div>
           <p className="font-medium mb-1">Etiquetas</p>
           <div className="flex flex-wrap gap-2">
-            {tags.map(t => (
+            {tags.map((t) => (
               <label key={t.id} className="flex items-center gap-1">
                 <input
                   type="checkbox"
                   checked={selectedTags.includes(t.name)}
-                  onChange={e => toggleTag(t.name, e.target.checked)}
+                  onChange={(e) => toggleTag(t.name, e.target.checked)}
                 />
                 {t.name}
               </label>
@@ -174,14 +226,17 @@ export default function EditRoomPage() {
 
         {/* Imágenes actuales */}
         <div>
-          <p className="font-medium mb-1">Imágenes actuales (clic para marcar principal / checkbox para eliminar)</p>
+          <p className="font-medium mb-1">
+            Imágenes actuales (clic para marcar principal / checkbox para
+            eliminar)
+          </p>
           <div className="flex gap-4 overflow-x-auto">
-            {room.images.map(img => (
+            {room.images.map((img) => (
               <div key={img.id} className="relative">
                 <img
                   src={`${process.env.NEXT_PUBLIC_API_URL}/rooms/images/${img.filename}?t=${Date.now()}`}
                   className={`w-32 h-24 object-cover rounded border cursor-pointer ${
-                    mainImageId === img.id ? 'ring-4 ring-blue-500' : ''
+                    mainImageId === img.id ? "ring-4 ring-blue-500" : ""
                   }`}
                   onClick={() => setMainImageId(img.id)}
                 />
@@ -204,15 +259,23 @@ export default function EditRoomPage() {
 
         {/* Nuevas imágenes */}
         <div>
-          <p className="font-medium mb-1">Agregar nuevas imágenes (clic para marcar una como principal)</p>
-          <input type="file" accept="image/*" multiple onChange={onNewImages} className="w-full" />
+          <p className="font-medium mb-1">
+            Agregar nuevas imágenes (clic para marcar una como principal)
+          </p>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={onNewImages}
+            className="w-full"
+          />
           {newImages.length > 0 && (
             <div className="grid grid-cols-3 gap-2 mt-3">
               {newImages.map((file, index) => (
                 <div
                   key={index}
                   className={`relative border rounded overflow-hidden cursor-pointer ${
-                    mainImageIndex === index ? 'ring-4 ring-green-500' : ''
+                    mainImageIndex === index ? "ring-4 ring-green-500" : ""
                   }`}
                   onClick={() => {
                     setMainImageIndex(index);
@@ -235,12 +298,17 @@ export default function EditRoomPage() {
         </div>
 
         <div className="flex justify-end gap-4 pt-4">
-          <button type="button" onClick={() => router.back()}
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+          >
             Cancelar
           </button>
-          <button type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
             Guardar cambios
           </button>
         </div>

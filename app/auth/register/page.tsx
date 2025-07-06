@@ -1,33 +1,32 @@
 // app/register/page.tsx
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, Phone } from 'lucide-react';
-import Link from 'next/link';
-import api from '../../gateway-services/ConnectionService';
-import { AxiosError} from 'axios';
-
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Mail, Lock, User, Phone } from "lucide-react";
+import Link from "next/link";
+import api from "../../gateway-services/ConnectionService";
+import { AxiosError } from "axios";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
-    name: '',
-    secondName: '',
-    lastName: '',
-    username: '',
-    email: '',
-    cellPhone: '',
-    password: '',
+    name: "",
+    secondName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    cellPhone: "",
+    password: "",
   });
-  const [usernameError, setUsernameError] = useState<string>('');
+  const [usernameError, setUsernameError] = useState<string>("");
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
-    if (id === 'username') {
-      setUsernameError('');
+    setFormData((prev) => ({ ...prev, [id]: value }));
+    if (id === "username") {
+      setUsernameError("");
     }
   };
 
@@ -37,13 +36,13 @@ export default function RegisterPage() {
     try {
       const { data } = await api.get<{ available: boolean }>(
         `/api/users/check-username`,
-        { params: { username } }
+        { params: { username } },
       );
       if (!data.available) {
-        setUsernameError('Username already exists. Please choose another.');
+        setUsernameError("Username already exists. Please choose another.");
       }
     } catch {
-      setUsernameError('Could not verify username. Try again later.');
+      setUsernameError("Could not verify username. Try again later.");
     }
   };
 
@@ -52,7 +51,7 @@ export default function RegisterPage() {
     const { name, lastName, username, email, cellPhone, password } = formData;
 
     if (!name || !lastName || !username || !email || !cellPhone || !password) {
-      alert('Please complete all required fields.');
+      alert("Please complete all required fields.");
       return;
     }
     if (usernameError) {
@@ -64,16 +63,21 @@ export default function RegisterPage() {
       await api.post(
         `/api/users`,
         { ...formData },
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: { "Content-Type": "application/json" } },
       );
 
       // Después de registrar, redirige al login:
-      router.push('/auth/login');
-    } catch (error) {
-      const axiosError = error as AxiosError;
-      const message =
-        axiosError?.response?.data?.message ?? 'Registration failed. Please try again.';
-      alert(axiosError);
+      router.push("/auth/login");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        alert(
+          error?.response?.data?.message ||
+            "Registration failed. Please try again",
+        );
+      } else {
+        console.error(error);
+        alert("Error inesperado");
+      }
     }
   };
 
@@ -82,10 +86,12 @@ export default function RegisterPage() {
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-bold text-center mb-6">Create Account</h2>
         <form onSubmit={handleRegister} className="space-y-5">
-          
           {/* First Name */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
               First Name
             </label>
             <div className="mt-1 flex items-center border border-gray-300 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-400">
@@ -103,7 +109,10 @@ export default function RegisterPage() {
 
           {/* Second Name */}
           <div>
-            <label htmlFor="secondName" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="secondName"
+              className="block text-sm font-medium text-gray-700"
+            >
               Second Name (optional)
             </label>
             <div className="mt-1 flex items-center border border-gray-300 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-400">
@@ -120,7 +129,10 @@ export default function RegisterPage() {
 
           {/* Last Name */}
           <div>
-            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="lastName"
+              className="block text-sm font-medium text-gray-700"
+            >
               Last Name
             </label>
             <div className="mt-1 flex items-center border border-gray-300 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-400">
@@ -138,7 +150,10 @@ export default function RegisterPage() {
 
           {/* Username */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700"
+            >
               Username
             </label>
             <div className="mt-1">
@@ -163,7 +178,10 @@ export default function RegisterPage() {
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <div className="mt-1 flex items-center border border-gray-300 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-400">
@@ -182,7 +200,10 @@ export default function RegisterPage() {
 
           {/* Cell Phone */}
           <div>
-            <label htmlFor="cellPhone" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="cellPhone"
+              className="block text-sm font-medium text-gray-700"
+            >
               Phone
             </label>
             <div className="mt-1 flex items-center border border-gray-300 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-400">
@@ -196,8 +217,12 @@ export default function RegisterPage() {
                 title="Only digits 1–9 are allowed."
                 value={formData.cellPhone}
                 onChange={handleChange}
-                onInvalid={e => e.currentTarget.setCustomValidity('Please enter only digits 1–9.')}
-                onInput={e => e.currentTarget.setCustomValidity('')}
+                onInvalid={(e) =>
+                  e.currentTarget.setCustomValidity(
+                    "Please enter only digits 1–9.",
+                  )
+                }
+                onInput={(e) => e.currentTarget.setCustomValidity("")}
                 required
               />
             </div>
@@ -205,7 +230,10 @@ export default function RegisterPage() {
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <div className="mt-1 flex items-center border border-gray-300 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-400">
@@ -223,13 +251,13 @@ export default function RegisterPage() {
           </div>
 
           {/* Register Button */}
-          <button 
+          <button
             type="submit"
             disabled={!!usernameError}
             className={`w-full py-2 px-4 rounded-xl transition ${
               usernameError
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-700 text-white"
             }`}
           >
             Register
@@ -237,12 +265,12 @@ export default function RegisterPage() {
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-4">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link href="/auth/login" className="underline">
             Sign in
           </Link>
         </p>
       </div>
     </main>
-);
+  );
 }
