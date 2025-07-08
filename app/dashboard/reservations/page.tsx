@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
+//import { Eye, Pencil } from "lucide-react";
 import api from "../../gateway-services/ConnectionService";
 
 interface Reservation {

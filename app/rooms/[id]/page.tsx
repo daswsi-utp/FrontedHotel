@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import api from "../../gateway-services/ConnectionService";
 import PaymentModal from "./PaymentModal";
+import axios from "axios";
 
 interface Room {
   roomId: number;
@@ -26,6 +27,15 @@ interface Room {
   images: { id: number; filename: string; main: boolean }[];
   tags: { id: number; name: string }[];
 }
+
+export interface BookingPayload {
+  userId: number;
+  roomId: number;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+}
+
 function getToken(): string {
   const raw = document.cookie
     .split("; ")
@@ -47,7 +57,7 @@ export default function RoomDetailPage() {
   } | null>(null);
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [bookingData, setBookingData] = useState<any>(null);
+  const [bookingData, setBookingData] = useState<BookingPayload>();
 
   useEffect(() => {
     if (!id) return;
@@ -96,21 +106,25 @@ export default function RoomDetailPage() {
 
     try {
       // 1️⃣ Leer token y extraer username
+      /*
       const raw = document.cookie
         .split("; ")
         .find((c) => c.startsWith("access_token="));
       const token = raw ? raw.split("=")[1] : "";
+      */
+      const token = getToken();
       const payload = JSON.parse(atob(token.split(".")[1])) as { sub: string };
       const username = payload.sub;
 
       // 2️⃣ Llamar a /api/users/username/{username} -> NO doblar /api
       const userResp = await api.get<{ id: number }>(
-        `/api/users/username/${encodeURIComponent(username)}`,
-        { headers: { Authorization: `Bearer ${token}` } },
+        `/users/username/${encodeURIComponent(username)}`,
       );
       const userId = userResp.data.id;
 
       // 3️⃣ Crear payload con userId dinámico
+      //
+      /*
       const bookingPayload = {
         userId,
         roomId: room.roomId,
@@ -118,15 +132,32 @@ export default function RoomDetailPage() {
         checkOut: checkOutDate,
         guests,
       };
+      */
 
-      setBookingData(bookingPayload);
-      setIsPaymentModalOpen(true);
-    } catch (err: any) {
-      console.error("Error al preparar la reserva:", err);
-      setBookingMessage({
-        type: "error",
-        text: "No se pudo procesar la reserva. Intenta de nuevo.",
+      setBookingData({
+        userId: userId,
+        roomId: room.roomId,
+        checkIn: checkInDate,
+        checkOut: checkOutDate,
+        guests: guests,
       });
+      //setBookingData(bookingPayload);
+      setIsPaymentModalOpen(true);
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        console.error("Error al preparar la reserva:", err);
+        setBookingMessage({
+          type: "error",
+          text: "No se pudo procesar la reserva. Intenta de nuevo.",
+        });
+      } else {
+        console.error(err);
+        alert("Error inesperado");
+        setBookingMessage({
+          type: "error",
+          text: "No se pudo procesar la reserva. Intenta de nuevo.",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -403,14 +434,15 @@ export default function RoomDetailPage() {
           </div>
         )}
       </div>
-
-      <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        bookingData={bookingData}
-        totalPrice={totalPrice}
-        onSuccess={handleBookingSuccess}
-      />
+      {bookingData && (
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          bookingData={bookingData}
+          totalPrice={totalPrice}
+          onSuccess={handleBookingSuccess}
+        />
+      )}
     </div>
   );
 }

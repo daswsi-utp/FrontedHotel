@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import api from "../../gateway-services/ConnectionService";
+import type { BookingPayload } from "./page";
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  bookingData: BookingData;
+  bookingData: BookingPayload;
   totalPrice: number;
   onSuccess: () => void;
 }
 
-interface BookingData {
+/*interface BookingData {
   id: number;
   userId: number;
   roomId: number;
@@ -20,7 +21,7 @@ interface BookingData {
   total: number;
   status: string;
   discount: number;
-}
+}*/
 
 type PaymentMethod = "card" | "yape" | "plin";
 

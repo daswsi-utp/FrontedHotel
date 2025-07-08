@@ -23,7 +23,7 @@ export default function GuestMessagesPage() {
   const stompClientRef = useRef<Client | null>(null);
 
   useEffect(() => {
-    api.get("/api/messages");
+    api.get("/messages");
     //.get("http://localhost:54518/api/messages")
     axios
       .get("http://localhost:52432/api/messages")
