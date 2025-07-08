@@ -42,7 +42,7 @@ export default function EditRoomPage() {
     roomSize: "",
     description: "",
   });
-  //  const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
+  //const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [toRemove, setToRemove] = useState<Set<number>>(new Set());
@@ -66,10 +66,11 @@ export default function EditRoomPage() {
       const main = r.images.find((img) => img.isMain);
       setMainImageId(main?.id ?? null);
     });
+    /*
     api
       .get<RoomType[]>(`/api/rooms/roomtype`)
       .then((res) => setRoomTypes(res.data));
-
+    */
     api.get<Tag[]>(`/api/rooms/tags`).then((res) => setTags(res.data));
   }, [id]);
 
