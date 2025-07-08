@@ -5,7 +5,7 @@ import SockJS from "sockjs-client";
 import { Client, IMessage } from "@stomp/stompjs";
 
 export default function ChatPage() {
-  const [connected, setConnected] = useState(false);
+  //  const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState("");
   const [name, setName] = useState("");
@@ -21,7 +21,7 @@ export default function ChatPage() {
       debug: (str) => console.log(str),
       reconnectDelay: 5000,
       onConnect: () => {
-        setConnected(true);
+        //        setConnected(true);
         client.subscribe("/topic/messages", onMessageReceived);
       },
       onStompError: (frame) => {
@@ -35,7 +35,7 @@ export default function ChatPage() {
 
     return () => {
       client.deactivate();
-      setConnected(false);
+      //      setConnected(false);
     };
   }, []);
 
