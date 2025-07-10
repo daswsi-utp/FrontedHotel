@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   BedDouble,
@@ -9,23 +9,27 @@ import {
   Tag,
   Mail,
   User,
-  LogOut
-} from 'lucide-react';
-import '../globals.css';
+  LogOut,
+} from "lucide-react";
+import "../globals.css";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
 
   const handleLogout = () => {
     // Limpieza de token…
-    localStorage.removeItem('access_token');
+    localStorage.removeItem("access_token");
     document.cookie = [
-      'access_token=;',
-      'Path=/;',
+      "access_token=;",
+      "Path=/;",
       `Expires=${new Date(0).toUTCString()};`,
-      'SameSite=Strict;'
-    ].join(' ');
-    router.push('/auth/login');
+      "SameSite=Strict;",
+    ].join(" ");
+    router.push("/auth/login");
   };
 
   return (
@@ -44,7 +48,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <NavLink href="/dashboard/rooms" icon={<BedDouble size={20} />}>
               Rooms
             </NavLink>
-            <NavLink href="/dashboard/reservations" icon={<CalendarCheck size={20} />}>
+            <NavLink
+              href="/dashboard/reservations"
+              icon={<CalendarCheck size={20} />}
+            >
               Reservations
             </NavLink>
             <NavLink href="/dashboard/promotions" icon={<Tag size={20} />}>
@@ -53,7 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <NavLink href="/dashboard/message" icon={<Mail size={20} />}>
               Messages
             </NavLink>
-            </nav>
+          </nav>
         </div>
 
         <button
@@ -64,11 +71,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <span>Cerrar sesión</span>
         </button>
       </aside>
-
       {/* Contenido scrollable */}
-      <main className="flex-1 bg-gray-50 p-8 overflow-y-auto">
-        {children}
-      </main>
+      <main className="flex-1 bg-gray-50 p-8 overflow-y-auto">{children}</main>
     </div>
   );
 }

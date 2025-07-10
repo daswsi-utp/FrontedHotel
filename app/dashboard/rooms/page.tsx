@@ -1,17 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import {
-  BedDouble,
-  Plus,
-  Pencil,
-  Trash2,
-  Eye,
-  Tags,
-} from 'lucide-react';
-import Link from 'next/link';
-import CreateRoomModal from './CreateRoomModal';
+//import api from "../../../gateway-services/ConnectionService";
+//import axios from "axios";
+import api from "../../gateway-services/ConnectionService";
+import { useEffect, useState } from "react";
+import { BedDouble, Plus, Pencil, Trash2, Eye, Tags } from "lucide-react";
+import Link from "next/link";
+import CreateRoomModal from "./CreateRoomModal";
 
 interface RoomType {
   id: number;
@@ -45,65 +40,66 @@ interface Room {
 function getMainImageUrl(images: Image[]): string {
   const main = images.find((img) => img.isMain);
   if (main) {
-    return `${process.env.NEXT_PUBLIC_API_URL}/rooms/images/${main.filename}?t=${Date.now()}`;
+    return `${process.env.NEXT_PUBLIC_API_URL}/api/rooms/images/${main.filename}?t=${Date.now()}`;
   } else if (images.length > 0) {
-    return `${process.env.NEXT_PUBLIC_API_URL}/rooms/images/${images[0].filename}?t=${Date.now()}`;
+    return `${process.env.NEXT_PUBLIC_API_URL}/api/rooms/images/${images[0].filename}?t=${Date.now()}`;
   } else {
-    return '/images/rooms/default.jpg';
+    return "/images/rooms/default.jpg";
   }
 }
 
 // Helper to extract token from cookie
 function getToken(): string {
   const raw = document.cookie
-    .split('; ')
-    .find((c) => c.startsWith('access_token='));
-  return raw ? raw.split('=')[1] : '';
+    .split("; ")
+    .find((c) => c.startsWith("access_token="));
+  return raw ? raw.split("=")[1] : "";
 }
 
 export default function RoomsPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
-  const [selectedType, setSelectedType] = useState('');
+  const [selectedType, setSelectedType] = useState("");
 
   useEffect(() => {
-    axios
-      .get<Room[]>(`${process.env.NEXT_PUBLIC_API_URL}/rooms`)
+    api
+      .get<Room[]>(`/api/rooms/rooms`)
       .then((res) => {
         setRooms(res.data);
         setLoading(false);
       })
       .catch((err) => {
-        setError('Error al obtener habitaciones');
+        setError("Error al obtener habitaciones");
         console.error(err);
         setLoading(false);
       });
 
-    axios
-      .get<RoomType[]>(`${process.env.NEXT_PUBLIC_API_URL}/roomtype`)
+    api
+      .get<RoomType[]>(`/api/rooms/roomtype`)
       .then((res) => setRoomTypes(res.data))
       .catch((err) => {
-        console.error('Error al obtener tipos de habitación:', err);
+        console.error("Error al obtener tipos de habitación:", err);
         setRoomTypes([]);
       });
   }, []);
 
   const handleDelete = async (roomId: number) => {
-    const confirmDelete = window.confirm('¿Estás seguro de eliminar esta habitación?');
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de eliminar esta habitación?",
+    );
     if (!confirmDelete) return;
     try {
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL}/rooms/${roomId}`,
-        { headers: { Authorization: `Bearer ${getToken()}` } }
-      );
-      alert('Habitación eliminada correctamente');
+      await api.delete(`/rooms/rooms/${roomId}`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      alert("Habitación eliminada correctamente");
       setRooms((prev) => prev.filter((room) => room.roomId !== roomId));
     } catch (error) {
-      console.error('Error al eliminar la habitación:', error);
-      alert('Ocurrió un error al eliminar la habitación');
+      console.error("Error al eliminar la habitación:", error);
+      alert("Ocurrió un error al eliminar la habitación");
     }
   };
 
@@ -167,9 +163,9 @@ export default function RoomsPage() {
                   Habitación {room.roomNumber} – {room.roomType.name}
                 </h2>
                 <p className="text-sm text-gray-600 mb-2">
-                  {room.availabilityStatus === 'AVAILABLE'
-                    ? 'Disponible'
-                    : 'No disponible'}
+                  {room.availabilityStatus === "AVAILABLE"
+                    ? "Disponible"
+                    : "No disponible"}
                 </p>
                 <p className="text-md text-gray-800 mb-1">
                   <strong>S/ {room.pricePerNight.toFixed(2)}</strong> por noche

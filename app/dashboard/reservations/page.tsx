@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Eye, Pencil } from 'lucide-react';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { Pencil } from "lucide-react";
+//import { Eye, Pencil } from "lucide-react";
+import api from "../../gateway-services/ConnectionService";
 
 interface Reservation {
   id: number;
@@ -12,42 +13,42 @@ interface Reservation {
   checkIn: string;
   checkOut: string;
   total: number;
-  status: 'CONFIRMED' | 'PENDING' | 'CANCELLED';
+  status: "CONFIRMED" | "PENDING" | "CANCELLED";
 }
 
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
   });
 }
 
 export default function ReservationsPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [filter, setFilter] = useState<'All' | 'CONFIRMED' | 'PENDING' | 'CANCELLED'>('All');
-  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<
+    "All" | "CONFIRMED" | "PENDING" | "CANCELLED"
+  >("All");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     async function fetchReservations() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/detail`);
-        if (!res.ok) throw new Error('Error fetching reservations');
-        const data = await res.json();
+        const { data } = await api.get<Reservation[]>(`/api/bookings/detail`);
         setReservations(data);
       } catch (error) {
-        console.error('Failed to fetch:', error);
+        console.error("Failed to fetch:", error);
       }
     }
     fetchReservations();
   }, []);
 
   const filtered = reservations
-    .filter(r => filter === 'All' || r.status === filter)
-    .filter(r =>
+    .filter((r) => filter === "All" || r.status === filter)
+    .filter((r) =>
       `${r.guestName} ${r.guestEmail} ${r.roomNumber}`
         .toLowerCase()
-        .includes(search.toLowerCase())
+        .includes(search.toLowerCase()),
     );
 
   return (
@@ -58,37 +59,54 @@ export default function ReservationsPage() {
           type="text"
           placeholder="Search by guest, email, or room..."
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
           className="border rounded px-3 py-2 w-full max-w-sm"
         />
       </div>
 
       <div className="flex gap-2">
-        {(['All', 'CONFIRMED', 'PENDING', 'CANCELLED'] as const).map(option => (
-          <button
-            key={option}
-            onClick={() => setFilter(option)}
-            className={`px-3 py-1 rounded-full border ${filter === option
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700'
+        {(["All", "CONFIRMED", "PENDING", "CANCELLED"] as const).map(
+          (option) => (
+            <button
+              key={option}
+              onClick={() => setFilter(option)}
+              className={`px-3 py-1 rounded-full border ${
+                filter === option
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-gray-700"
               }`}
-          >
-            {option}
-          </button>
-        ))}
+            >
+              {option}
+            </button>
+          ),
+        )}
       </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white shadow rounded">
           <thead>
             <tr className="bg-gray-100 text-left">
-              {['ID', 'Guest', 'Room', 'Check-in', 'Check-out', 'Total', 'Status', 'Actions'].map(col => (
-                <th key={col} className="px-4 py-2 text-sm font-medium text-gray-600">{col}</th>
+              {[
+                "ID",
+                "Guest",
+                "Room",
+                "Check-in",
+                "Check-out",
+                "Total",
+                "Status",
+                "Actions",
+              ].map((col) => (
+                <th
+                  key={col}
+                  className="px-4 py-2 text-sm font-medium text-gray-600"
+                >
+                  {col}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {filtered.map(res => (
+            {filtered.map((res) => (
               <tr key={res.id} className="border-b hover:bg-gray-50">
                 <td className="px-4 py-3 text-sm">#{res.id}</td>
                 <td className="px-4 py-3 text-sm">
@@ -97,16 +115,20 @@ export default function ReservationsPage() {
                 </td>
                 <td className="px-4 py-3 text-sm">{res.roomNumber}</td>
                 <td className="px-4 py-3 text-sm">{formatDate(res.checkIn)}</td>
-                <td className="px-4 py-3 text-sm">{formatDate(res.checkOut)}</td>
+                <td className="px-4 py-3 text-sm">
+                  {formatDate(res.checkOut)}
+                </td>
                 <td className="px-4 py-3 text-sm">${res.total}</td>
                 <td className="px-4 py-3 text-sm">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${res.status === 'CONFIRMED'
-                        ? 'bg-green-100 text-green-800'
-                        : res.status === 'PENDING'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
+
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      res.status === "CONFIRMED"
+                        ? "bg-green-100 text-green-800"
+                        : res.status === "PENDING"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                    }`}
                   >
                     {res.status}
                   </span>
@@ -114,26 +136,31 @@ export default function ReservationsPage() {
                 <td className="px-4 py-3 text-sm space-x-2">
                   <button
                     onClick={async () => {
-                      const updated = { ...res, status: 'ACTIVE' }; 
+                      const updated = { ...res, status: "ACTIVE" };
                       try {
-                        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/${res.id}`, {
-                          method: 'PUT',
-                          headers: {
-                            'Content-Type': 'application/json',
+                        const response = await fetch(
+                          `${process.env.NEXT_PUBLIC_API_URL}/bookings/${res.id}`,
+                          {
+                            method: "PUT",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(updated),
                           },
-                          body: JSON.stringify(updated),
-                        });
+                        );
 
                         if (response.ok) {
                           const newReservation = await response.json();
-                          setReservations(prev =>
-                            prev.map(r => (r.id === newReservation.id ? newReservation : r))
+                          setReservations((prev) =>
+                            prev.map((r) =>
+                              r.id === newReservation.id ? newReservation : r,
+                            ),
                           );
                         } else {
-                          console.error('Failed to update reservation');
+                          console.error("Failed to update reservation");
                         }
                       } catch (err) {
-                        console.error('Error updating reservation:', err);
+                        console.error("Error updating reservation:", err);
                       }
                     }}
                     className="text-green-600 underline text-xs flex items-center gap-1"

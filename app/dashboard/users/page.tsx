@@ -1,18 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 interface User {
   id: number;
   name: string;
   email: string;
   phone: string;
-  joinDate: string;     // ⇢ ya formateado a algo legible
+  joinDate: string; // ⇢ ya formateado a algo legible
   bookings: number;
   totalSpent: number;
-  status: 'Active' | 'Inactive';
+  status: "Active" | "Inactive";
 }
-
 
 interface RawStat {
   id: number;
@@ -20,15 +19,15 @@ interface RawStat {
   userLastName: string;
   userEmail: string;
   cellPhone: string;
-  firstBookingDate: string;   // ISO‐8601
+  firstBookingDate: string; // ISO‐8601
   totalBookings: number;
   totalAmount: number;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: "ACTIVE" | "INACTIVE";
 }
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
-  const [filter, setFilter] = useState<'All' | 'Active' | 'Inactive'>('All');
+  const [filter, setFilter] = useState<"All" | "Active" | "Inactive">("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,7 +39,7 @@ export default function UsersPage() {
         setLoading(true);
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/bookings/stats`,
-          { signal: controller.signal, cache: 'no-store' } 
+          { signal: controller.signal, cache: "no-store" },
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
@@ -50,21 +49,23 @@ export default function UsersPage() {
           name: `${s.userName} ${s.userLastName}`,
           email: s.userEmail,
           phone: s.cellPhone,
-          joinDate: new Date(s.firstBookingDate).toLocaleDateString('en-US', {
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric',
+          joinDate: new Date(s.firstBookingDate).toLocaleDateString("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
           }),
           bookings: s.totalBookings,
           totalSpent: s.totalAmount,
-          status: s.status === 'ACTIVE' ? 'Active' : 'Inactive',
+          status: s.status === "ACTIVE" ? "Active" : "Inactive",
         }));
 
         setUsers(mapped);
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          console.error(err);
-          setError(err.message ?? 'Error al cargar datos');
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.name !== "AbortError") {
+            console.error(err);
+            setError(err.message ?? "Error al cargar datos");
+          }
         }
       } finally {
         setLoading(false);
@@ -72,11 +73,11 @@ export default function UsersPage() {
     }
 
     load();
-    return () => controller.abort(); 
+    return () => controller.abort();
   }, []);
 
   const filtered =
-    filter === 'All' ? users : users.filter((u) => u.status === filter);
+    filter === "All" ? users : users.filter((u) => u.status === filter);
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">Registered Users</h1>
@@ -95,14 +96,14 @@ export default function UsersPage() {
           // TODO: Implementar búsqueda si la necesitas
         />
         <div className="flex gap-2">
-          {(['All', 'Active', 'Inactive'] as const).map((value) => (
+          {(["All", "Active", "Inactive"] as const).map((value) => (
             <button
               key={value}
               onClick={() => setFilter(value)}
               className={`px-4 py-2 rounded-md border ${
                 filter === value
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-blue-600 border-blue-600'
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-blue-600 border-blue-600"
               }`}
             >
               {value}
@@ -140,9 +141,9 @@ export default function UsersPage() {
                 <td className="px-4 py-2">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      u.status === 'Active'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'
+                      u.status === "Active"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
                     }`}
                   >
                     {u.status}

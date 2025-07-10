@@ -17,7 +17,7 @@ export interface Promotion{
   isActive: boolean;
   minStay: number;
   roomApplicability: RoomApplicability;
-  roomsTypes: RoomType[];
+  rooms: RoomType[];
 }
 
 //Promotion to be registered or updated
@@ -36,7 +36,7 @@ export interface PromotionRequest{
 
 export interface RoomType{
   roomTypeId: number;
-  name: string;
+  roomType: string;
 }
 
 export const getAllPromotions = async (): Promise<Promotion[]> =>{
@@ -63,6 +63,6 @@ export const updatePromotion = async (id: number, promotion: PromotionRequest) =
   return res.data;
 }
 export const getAllRoomTypes = async (): Promise<RoomType[]> =>{
-  const res = await api.get<RoomType[]>(`/api/rooms/type/all`);
+  const res = await api.get<RoomType[]>(`/api/rooms/rooms/type/all`);
   return res.data;
 }
