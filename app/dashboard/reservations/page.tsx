@@ -121,6 +121,7 @@ export default function ReservationsPage() {
                 <td className="px-4 py-3 text-sm">${res.total}</td>
                 <td className="px-4 py-3 text-sm">
                   <span
+
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       res.status === "CONFIRMED"
                         ? "bg-green-100 text-green-800"
@@ -167,6 +168,7 @@ export default function ReservationsPage() {
                     <Pencil className="w-4 h-4" /> Set ACTIVE
                   </button>
                 </td>
+
               </tr>
             ))}
             {filtered.length === 0 && (
