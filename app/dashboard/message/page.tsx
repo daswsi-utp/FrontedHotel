@@ -23,13 +23,13 @@ export default function GuestMessagesPage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:52432/api/messages")
+      .get("http://localhost:54399/api/messages")
       .then((res) => setMessages(res.data))
       .catch((err) => console.error("Error loading messages", err));
   }, []);
 
   useEffect(() => {
-    const socket = new SockJS("http://localhost:52432/ws-message");
+    const socket = new SockJS("http://localhost:54399/ws-message");
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
@@ -73,7 +73,7 @@ export default function GuestMessagesPage() {
 
     if (!msg.read) {
       axios
-        .put(`http://localhost:52432/api/messages/${msg.id}/read`)
+        .put(`http://localhost:54399/api/messages/${msg.id}/read`)
         .then(() => {
           setMessages((prev) =>
             prev.map((m) => (m.id === msg.id ? { ...m, read: true } : m))
