@@ -29,4 +29,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       )}
     </>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 17bd83094f4f5bb42c32090606ff8916e573eda4
