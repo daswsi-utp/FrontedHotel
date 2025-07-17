@@ -19,17 +19,18 @@ export default function GuestMessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [filter, setFilter] = useState<"all" | "read" | "unread">("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const stompClientRef = useRef<Client | null>(null);
 
   useEffect(() => {
     axios
-      .get("http://localhost:52432/api/messages")
+      .get("http://localhost:51605/api/messages")
       .then((res) => setMessages(res.data))
       .catch((err) => console.error("Error loading messages", err));
   }, []);
 
   useEffect(() => {
-    const socket = new SockJS("http://localhost:52432/ws-message");
+    const socket = new SockJS("http://localhost:51605/ws-message");
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
@@ -38,7 +39,6 @@ export default function GuestMessagesPage() {
         client.subscribe("/topic/messages", (msg: IMessage) => {
           const newMessage: Message = JSON.parse(msg.body);
 
-          // Actualizar si ya existe o agregar al inicio
           setMessages((prev) => {
             const exists = prev.find((m) => m.id === newMessage.id);
             if (exists) {
@@ -62,18 +62,27 @@ export default function GuestMessagesPage() {
     };
   }, []);
 
-  const filteredMessages = messages.filter((msg) => {
-    if (filter === "all") return true;
-    if (filter === "read") return msg.read;
-    return !msg.read;
-  });
+  const filteredMessages = messages
+    .filter((msg) => {
+      if (filter === "read") return msg.read;
+      if (filter === "unread") return !msg.read;
+      return true;
+    })
+    .filter((msg) => {
+      const term = searchTerm.toLowerCase();
+      return (
+        msg.name?.toLowerCase().includes(term) ||
+        msg.subject?.toLowerCase().includes(term) ||
+        msg.content?.toLowerCase().includes(term)
+      );
+    });
 
   const handleSelectMessage = (msg: Message) => {
     setSelectedMessage(msg);
 
     if (!msg.read) {
       axios
-        .put(`http://localhost:52432/api/messages/${msg.id}/read`)
+        .put(`http://localhost:51605/api/messages/${msg.id}/read`)
         .then(() => {
           setMessages((prev) =>
             prev.map((m) => (m.id === msg.id ? { ...m, read: true } : m))
@@ -91,6 +100,8 @@ export default function GuestMessagesPage() {
         <input
           type="text"
           placeholder="Search messages..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="border px-4 py-2 rounded-md w-72"
         />
 

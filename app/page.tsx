@@ -113,12 +113,6 @@ export default function HomePage() {
           ))}
         </div>
         <div className="text-center mt-12">
-          <Link
-            href="/chat"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
-          >
-            Ir al Chat
-          </Link>
         </div>
 
       </section>
